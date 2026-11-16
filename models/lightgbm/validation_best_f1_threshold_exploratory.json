@@ -1,0 +1,8 @@
+{
+  "warning": "Exploratory only. The threshold was selected and evaluated on the same validation set.",
+  "threshold": 0.505,
+  "precision": 0.1957245974458634,
+  "recall": 0.41228070175438597,
+  "f1": 0.26543674698795183,
+  "balanced_accuracy": 0.5975490022003807
+}

@@ -1,0 +1,32 @@
+{
+  "created_utc": "2026-10-24T21:04:27.153187+00:00",
+  "model": "sklearn.linear_model.LogisticRegression",
+  "parameters": {
+    "C": 1.0,
+    "class_weight": null,
+    "dual": false,
+    "fit_intercept": true,
+    "intercept_scaling": 1,
+    "l1_ratio": null,
+    "max_iter": 2000,
+    "multi_class": "deprecated",
+    "n_jobs": null,
+    "penalty": "l2",
+    "random_state": 42,
+    "solver": "lbfgs",
+    "tol": 0.0001,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "training_data_dir": "C:\\Users\\AGM.PRASAD\\OneDrive\\Desktop\\Care Continum\\dataset",
+  "feature_count": 189,
+  "train_rows": 65110,
+  "validation_rows": 15049,
+  "test_rows_loaded_for_integrity_only": 19955,
+  "target_columns": {
+    "train": "readmitted_30d",
+    "validation": "readmitted_30d",
+    "test": "readmitted_30d"
+  },
+  "test_metrics_computed": false
+}

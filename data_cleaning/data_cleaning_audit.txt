@@ -1,0 +1,53 @@
+CARE CONTINUUM — LEVEL 1 DATA CLEANING AUDIT
+Generated: 2026-10-23T23:55:57+05:30
+Input file: C:\Users\AGM.PRASAD\OneDrive\Desktop\Care Continum\dataset\diabetic_data.xlsx
+Output file: C:\Users\AGM.PRASAD\OneDrive\Desktop\Care Continum\dataset\diabetic_data_cleaned.csv
+Mapping file: C:\Users\AGM.PRASAD\OneDrive\Desktop\Care Continum\dataset\IDS_mapping.csv
+
+Original shape: 101,766 rows × 50 columns
+Readmission labels:
+  NO: 54,864 (53.91%)
+  >30: 35,545 (34.93%)
+  <30: 11,357 (11.16%)
+
+Death-related exclusion codes verified against IDS_mapping.csv:
+  Code 11: Expired; rows=1,642; readmission labels={'NO': 1642}
+  Code 19: Expired at home. Medicaid only, hospice.; rows=8; readmission labels={'NO': 8}
+  Code 20: Expired in a medical facility. Medicaid only, hospice.; rows=2; readmission labels={'NO': 2}
+  Code 21: Expired, place unknown. Medicaid only, hospice.; rows=0; readmission labels={}
+Total death-related encounters excluded: 1,652
+Hospice codes 13 and 14 are retained.
+
+Confirmed and dropped constant column: examide
+Confirmed and dropped constant column: citoglipton
+Gender 'Unknown/Invalid' records preserved unchanged: 3
+Truly missing gender values left missing for later review: 0
+
+LEVEL 1 RULES APPLIED
+Dropped columns: encounter_id, weight, examide, citoglipton
+Missing race/payer_code/medical_specialty values replaced with 'Unknown':
+  race: 2,239
+  payer_code: 39,591
+  medical_specialty: 49,129
+ID-code columns converted to string categories; not one-hot encoded.
+Original diagnosis code columns preserved unchanged; diagnosis grouping deferred.
+Medication columns retained except examide/citoglipton if confirmed constant.
+No medication signal scoring/thresholding was performed.
+No deduplication, train/test split, imputation beyond approved Unknown fields, encoding, scaling, or model training was performed.
+Original readmitted target was removed; use readmitted_30d as y.
+
+Cleaned shape: 100,114 rows × 46 columns
+Rows excluded: 1,652
+Unique patients remaining: 70,439
+Patients with 2+ remaining encounters: 16,483
+Maximum remaining encounters for one patient: 40
+
+Binary target counts (readmitted_30d):
+  0 (original NO or >30): 88,757
+  1 (original <30): 11,357
+
+IMPORTANT for later stages:
+  * Use readmitted_30d as y and never include it in X.
+  * Keep patient_nbr only for grouped splitting; exclude it from X.
+  * Raw diag_1/diag_2/diag_3 are retained; diagnosis grouping is a later step.
+  * Medication features require the separately planned signal/usefulness experiment.

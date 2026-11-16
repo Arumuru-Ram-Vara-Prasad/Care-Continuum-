@@ -1,0 +1,29 @@
+{
+  "created_utc": "2026-10-25T09:24:24.470295+00:00",
+  "model": "CatBoostClassifier",
+  "dataset": "C:\\Users\\AGM.PRASAD\\OneDrive\\Desktop\\Care Continum\\dataset\\diabetic_data_drugs_pruned(3).csv",
+  "split_assignments": "C:\\Users\\AGM.PRASAD\\OneDrive\\Desktop\\Care Continum\\dataset\\split_assignments.csv",
+  "patient_disjoint_splits_verified": true,
+  "source_row_alignment_verified": true,
+  "cv": "5-fold GroupKFold by patient_nbr",
+  "parameters": {
+    "iterations": 1000,
+    "depth": 6,
+    "learning_rate": 0.05,
+    "loss_function": "Logloss",
+    "eval_metric": "AUC",
+    "auto_class_weights": "Balanced",
+    "random_seed": 42,
+    "verbose": false,
+    "allow_writing_files": false,
+    "thread_count": -1
+  },
+  "original_feature_set_used": true,
+  "experimental_features_excluded": [
+    "medication_changes_count",
+    "has_specialty"
+  ],
+  "test_rows_loaded_for_integrity_only": 19955,
+  "test_metrics_computed": false,
+  "design_caveat": "discharge_disposition_id is currently included. If predictions are intended at admission, it must be removed because it is not available at that prediction time."
+}

@@ -1,0 +1,25 @@
+{
+  "threshold": 0.5,
+  "n_samples": 15049,
+  "positive_rate": 0.1136288125456841,
+  "accuracy": 0.685294703967041,
+  "balanced_accuracy": 0.6103873397665641,
+  "precision": 0.1836051861145964,
+  "recall": 0.5134502923976608,
+  "f1": 0.270486752926679,
+  "average_precision_pr_auc": 0.2128330292156424,
+  "roc_auc": 0.6609003454233705,
+  "confusion_matrix_labels_0_then_1": [
+    [
+      9435,
+      3904
+    ],
+    [
+      832,
+      878
+    ]
+  ],
+  "model": "CatBoostClassifier",
+  "evaluation_split": "validation",
+  "test_metrics_computed": false
+}

@@ -1,0 +1,24 @@
+{
+  "model": "random_forest_with_fold_local_preprocessing",
+  "evaluation_split": "validation",
+  "threshold": 0.5,
+  "n_samples": 15049,
+  "positive_rate": 0.1136288125456841,
+  "accuracy": 0.886304737856336,
+  "balanced_accuracy": 0.5076099236771741,
+  "precision": 0.4918032786885246,
+  "recall": 0.017543859649122806,
+  "f1": 0.03387916431394692,
+  "average_precision_pr_auc": 0.20490009739439283,
+  "roc_auc": 0.6531479822829684,
+  "confusion_matrix_labels_0_then_1": [
+    [
+      13308,
+      31
+    ],
+    [
+      1680,
+      30
+    ]
+  ]
+}

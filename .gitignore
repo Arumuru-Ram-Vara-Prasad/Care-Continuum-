@@ -1,0 +1,27 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+
+# Secrets
+.env
+*.pem
+*.key
+
+# Temporary files
+*.log
+.DS_Store
+
+# Large Random Forest models
+models/random_forest_feature_engineering_experiment/engineered_random_forest_pipeline.joblib
+models/random_forest_feature_engineering_experiment/baseline_random_forest_pipeline.joblib
+models/random_forest_leakage_aware/random_forest_pipeline.joblib
+

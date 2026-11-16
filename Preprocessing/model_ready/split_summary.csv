@@ -1,0 +1,4 @@
+split,encounters,unique_patients,early_readmissions,early_readmission_rate_pct
+train,65110,45785,7448,11.4391
+validation,15049,10566,1710,11.3629
+test,19955,14088,2199,11.0198

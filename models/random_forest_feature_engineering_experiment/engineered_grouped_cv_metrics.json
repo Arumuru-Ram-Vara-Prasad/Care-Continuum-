@@ -1,0 +1,27 @@
+{
+  "model_variant": "engineered",
+  "evaluation_split": "5-fold GroupKFold on training split",
+  "threshold": 0.5,
+  "n_samples": 65110,
+  "positive_rate": 0.1143910305636615,
+  "accuracy": 0.8853939487021962,
+  "balanced_accuracy": 0.5063677621329022,
+  "precision": 0.4703389830508475,
+  "recall": 0.014903329752953814,
+  "f1": 0.028891202498698594,
+  "average_precision_pr_auc": 0.2167048520325833,
+  "roc_auc": 0.665684195177042,
+  "confusion_matrix_labels_0_then_1": [
+    [
+      57537,
+      125
+    ],
+    [
+      7337,
+      111
+    ]
+  ],
+  "grouping": "patient_nbr",
+  "preprocessing_refit_inside_each_fold": true,
+  "n_unique_patients": 45785
+}

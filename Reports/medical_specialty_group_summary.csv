@@ -1,0 +1,18 @@
+medical_specialty_group,encounters,percentage
+Unknown,49139,49.08
+General/Internal Medicine,21725,21.7
+Emergency Medicine,7449,7.44
+Cardiology/Vascular,6563,6.56
+Surgery,3779,3.77
+Orthopedics/Rehabilitation,3117,3.11
+Respiratory,856,0.86
+Renal/Urinary,2228,2.23
+Digestive,551,0.55
+Neurology,203,0.2
+Mental Health,962,0.96
+Pediatrics,579,0.58
+Women's Health,772,0.77
+Oncology/Hematology,605,0.6
+Endocrine/Metabolic,127,0.13
+Diagnostics/Anesthesia,1210,1.21
+Other Specialties,249,0.25

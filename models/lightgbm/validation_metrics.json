@@ -1,0 +1,25 @@
+{
+  "threshold": 0.5,
+  "n_samples": 15049,
+  "positive_rate": 0.1136288125456841,
+  "accuracy": 0.7350654528540103,
+  "balanced_accuracy": 0.5974218194109608,
+  "precision": 0.19320937752627323,
+  "recall": 0.4192982456140351,
+  "f1": 0.2645268400664084,
+  "average_precision_pr_auc": 0.20256410493218827,
+  "roc_auc": 0.646883714772099,
+  "confusion_matrix_labels_0_then_1": [
+    [
+      10345,
+      2994
+    ],
+    [
+      993,
+      717
+    ]
+  ],
+  "model": "LightGBM",
+  "evaluation_split": "validation",
+  "test_metrics_computed": false
+}

@@ -1,0 +1,12 @@
+drug_feature,No_encounters,No_early_readmissions,No_readmission_rate_pct,non_No_encounters,non_No_early_readmissions,non_No_readmission_rate_pct,difference_percentage_points,risk_ratio_non_No_vs_No,fisher_exact_p_value,sufficient_group_size,initial_flag,adjusted_p_value_BH,verification_result
+chlorpropamide,100029,11352,11.348708874426416,85,5,5.88235294117647,-5.466355933249946,0.5183279442855366,0.12435317150967874,True,LARGE RATE DIFFERENCE - investigate,1.0,LARGE DIFFERENCE - not statistically established
+acetohexamide,100113,11357,11.344181075384816,1,0,0.0,-11.344181075384816,0.0,1.0,False,LOW SAMPLE SIZE - interpret cautiously,1.0,LOW SAMPLE SIZE - rates are unstable
+tolbutamide,100093,11356,11.345448732678609,21,1,4.761904761904762,-6.583543970773847,0.419719384759892,0.5033868962575181,False,LOW SAMPLE SIZE - interpret cautiously,1.0,LOW SAMPLE SIZE - rates are unstable
+acarbose,99807,11329,11.35090725099442,307,28,9.120521172638437,-2.2303860783559823,0.8035059199201381,0.2415161457562261,True,LARGE RATE DIFFERENCE - investigate,1.0,LARGE DIFFERENCE - not statistically established
+miglitol,100076,11353,11.344378272512891,38,4,10.526315789473683,-0.818062483039208,0.9278882929158533,1.0,True,No large raw rate difference,1.0,NO STRONG ANOMALY DETECTED
+troglitazone,100111,11357,11.344407707444738,3,0,0.0,-11.344407707444738,0.0,1.0,False,LOW SAMPLE SIZE - interpret cautiously,1.0,LOW SAMPLE SIZE - rates are unstable
+tolazamide,100075,11354,11.345490881838622,39,3,7.6923076923076925,-3.653183189530929,0.6780057180797008,0.6181987065728627,True,LARGE RATE DIFFERENCE - investigate,1.0,LARGE DIFFERENCE - not statistically established
+glipizide-metformin,100101,11356,11.344542012567308,13,1,7.6923076923076925,-3.6522343202596153,0.6780624271818354,1.0,False,LOW SAMPLE SIZE - interpret cautiously,1.0,LOW SAMPLE SIZE - rates are unstable
+glimepiride-pioglitazone,100113,11357,11.344181075384816,1,0,0.0,-11.344181075384816,0.0,1.0,False,LOW SAMPLE SIZE - interpret cautiously,1.0,LOW SAMPLE SIZE - rates are unstable
+metformin-rosiglitazone,100112,11357,11.344294390282883,2,0,0.0,-11.344294390282883,0.0,1.0,False,LOW SAMPLE SIZE - interpret cautiously,1.0,LOW SAMPLE SIZE - rates are unstable
+metformin-pioglitazone,100113,11357,11.344181075384816,1,0,0.0,-11.344181075384816,0.0,1.0,False,LOW SAMPLE SIZE - interpret cautiously,1.0,LOW SAMPLE SIZE - rates are unstable

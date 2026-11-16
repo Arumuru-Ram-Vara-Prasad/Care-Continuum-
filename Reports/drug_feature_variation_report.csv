@@ -1,0 +1,22 @@
+feature,total_encounters,observed_encounters,missing_count,missing_pct,unique_values,dominant_value,dominant_value_pct,variation_from_dominant_pct,category_counts_No_Steady_Up_Down,no_pct,steady_pct,up_pct,down_pct,decision,reason
+metformin-pioglitazone,100114,100114,0,0.0,2,No,99.999,0.001,No=100113; Steady=1; Up=0; Down=0,99.999,0.001,0.0,0.0,REMOVE,Near-constant: variation below 0.5%
+acetohexamide,100114,100114,0,0.0,2,No,99.999,0.001,No=100113; Steady=1; Up=0; Down=0,99.999,0.001,0.0,0.0,REMOVE,Near-constant: variation below 0.5%
+glimepiride-pioglitazone,100114,100114,0,0.0,2,No,99.999,0.001,No=100113; Steady=1; Up=0; Down=0,99.999,0.001,0.0,0.0,REMOVE,Near-constant: variation below 0.5%
+metformin-rosiglitazone,100114,100114,0,0.0,2,No,99.998,0.002,No=100112; Steady=2; Up=0; Down=0,99.998,0.002,0.0,0.0,REMOVE,Near-constant: variation below 0.5%
+troglitazone,100114,100114,0,0.0,2,No,99.997,0.003,No=100111; Steady=3; Up=0; Down=0,99.997,0.003,0.0,0.0,REMOVE,Near-constant: variation below 0.5%
+glipizide-metformin,100114,100114,0,0.0,2,No,99.987,0.013,No=100101; Steady=13; Up=0; Down=0,99.987,0.013,0.0,0.0,REMOVE,Near-constant: variation below 0.5%
+tolbutamide,100114,100114,0,0.0,2,No,99.979,0.021,No=100093; Steady=21; Up=0; Down=0,99.979,0.021,0.0,0.0,REMOVE,Near-constant: variation below 0.5%
+miglitol,100114,100114,0,0.0,4,No,99.962,0.038,No=100076; Steady=31; Up=2; Down=5,99.962,0.031,0.002,0.005,REMOVE,Near-constant: variation below 0.5%
+tolazamide,100114,100114,0,0.0,3,No,99.961,0.039,No=100075; Steady=38; Up=1; Down=0,99.961,0.038,0.001,0.0,REMOVE,Near-constant: variation below 0.5%
+chlorpropamide,100114,100114,0,0.0,4,No,99.9151,0.0849,No=100029; Steady=78; Up=6; Down=1,99.9151,0.0779,0.006,0.001,REMOVE,Near-constant: variation below 0.5%
+acarbose,100114,100114,0,0.0,4,No,99.6933,0.3067,No=99807; Steady=294; Up=10; Down=3,99.6933,0.2937,0.01,0.003,REMOVE,Near-constant: variation below 0.5%
+nateglinide,100114,100114,0,0.0,4,No,99.3058,0.6942,No=99419; Steady=660; Up=24; Down=11,99.3058,0.6592,0.024,0.011,KEEP,Variation meets threshold
+glyburide-metformin,100114,100114,0,0.0,4,No,99.3028,0.6972,No=99416; Steady=684; Up=8; Down=6,99.3028,0.6832,0.008,0.006,KEEP,Variation meets threshold
+repaglinide,100114,100114,0,0.0,4,No,98.4747,1.5253,No=98587; Steady=1373; Up=109; Down=45,98.4747,1.3714,0.1089,0.0449,KEEP,Variation meets threshold
+glimepiride,100114,100114,0,0.0,4,No,94.8589,5.1411,No=94967; Steady=4630; Up=324; Down=193,94.8589,4.6247,0.3236,0.1928,KEEP,Variation meets threshold
+rosiglitazone,100114,100114,0,0.0,4,No,93.6782,6.3218,No=93785; Steady=6070; Up=173; Down=86,93.6782,6.0631,0.1728,0.0859,KEEP,Variation meets threshold
+pioglitazone,100114,100114,0,0.0,4,No,92.7273,7.2727,No=92833; Steady=6934; Up=230; Down=117,92.7273,6.9261,0.2297,0.1169,KEEP,Variation meets threshold
+glyburide,100114,100114,0,0.0,4,No,89.445,10.555,No=89547; Steady=9200; Up=806; Down=561,89.445,9.1895,0.8051,0.5604,KEEP,Variation meets threshold
+glipizide,100114,100114,0,0.0,4,No,87.4094,12.5906,No=87509; Steady=11284; Up=767; Down=554,87.4094,11.2712,0.7661,0.5534,KEEP,Variation meets threshold
+metformin,100114,100114,0,0.0,4,No,80.1247,19.8753,No=80216; Steady=18256; Up=1067; Down=575,80.1247,18.2352,1.0658,0.5743,KEEP,Variation meets threshold
+insulin,100114,100114,0,0.0,4,No,46.6268,53.3732,No=46680; Steady=30331; Up=11091; Down=12012,46.6268,30.2965,11.0784,11.9983,KEEP,Variation meets threshold

@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Care Continuum — Predicting 30-Day Hospital Readmission for Diabetic Patients</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* ===== CSS RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #f8f9fa;
+  color: #2c3e50;
+  line-height: 1.7;
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== COLOR VARIABLES ===== */
+:root {
+  --primary: #1a5276;
+  --primary-light: #1a527610;
+  --accent: #2980b9;
+  --accent-light: #2980b918;
+  --success: #27ae60;
+  --danger: #e74c3c;
+  --warning: #f39c12;
+  --gray-100: #f8f9fa;
+  --gray-200: #e9ecef;
+  --gray-300: #dee2e6;
+  --gray-500: #6c757d;
+  --gray-700: #495057;
+  --gray-900: #212529;
+  --white: #ffffff;
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 4px 24px rgba(0,0,0,0.12);
+  --radius: 10px;
+  --nav-width: 270px;
+}
+
+/* ===== SIDEBAR NAVIGATION ===== */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--nav-width);
+  height: 100vh;
+  background: var(--primary);
+  color: var(--white);
+  overflow-y: auto;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 16px rgba(0,0,0,0.15);
+}
+.sidebar-header {
+  padding: 1.5rem 1.25rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+}
+.sidebar-header .logo {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.7;
+  margin-bottom: 0.3rem;
+}
+.sidebar-header h1 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.sidebar-header .subtitle {
+  font-size: 0.75rem;
+  opacity: 0.65;
+  margin-top: 0.4rem;
+  line-height: 1.4;
+}
+.sidebar nav { flex: 1; padding: 0.75rem 0; }
+.sidebar nav a {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.55rem 1.25rem;
+  color: rgba(255,255,255,0.72);
+  text-decoration: none;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+.sidebar nav a:hover {
+  color: var(--white);
+  background: rgba(255,255,255,0.07);
+}
+.sidebar nav a.active {
+  color: var(--white);
+  background: rgba(255,255,255,0.1);
+  border-left-color: var(--warning);
+  font-weight: 600;
+}
+.sidebar nav a .nav-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.4rem; height: 1.4rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  font-size: 0.68rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 0.05rem;
+}
+.sidebar nav a.active .nav-num {
+  background: var(--warning);
+  color: var(--primary);
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  margin-left: var(--nav-width);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Hero */
+.hero {
+  background: linear-gradient(135deg, var(--primary) 0%, #1a6ea0 50%, var(--accent) 100%);
+  color: var(--white);
+  padding: 4rem 3rem 3.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  top: -50%; right: -10%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero h1 { font-size: 2.3rem; font-weight: 800; line-height: 1.2; margin-bottom: 0.75rem; position: relative; z-index: 1; }
+.hero .tagline { font-size: 1.15rem; opacity: 0.88; max-width: 700px; line-height: 1.55; position: relative; z-index: 1; }
+.hero .badge-row { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: 0.6rem; position: relative; z-index: 1; }
+.hero .badge {
+  display: inline-block;
+  padding: 0.3rem 0.85rem;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* Sections */
+.content-area { padding: 2rem 2.5rem 3rem; max-width: 1100px; }
+.section { margin-bottom: 3rem; scroll-margin-top: 1.5rem; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--gray-300);
+}
+.section-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem; height: 2.2rem;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+.section-header h2 { font-size: 1.5rem; color: var(--primary); font-weight: 700; }
+.section-header .pts { font-size: 0.78rem; color: var(--gray-500); margin-left: auto; white-space: nowrap; font-weight: 600; }
+
+/* Cards */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+}
+.card p, .card li { font-size: 0.92rem; }
+.card ul, .card ol { padding-left: 1.3rem; }
+.card li { margin-bottom: 0.35rem; }
+
+/* Highlight box */
+.highlight-box {
+  background: var(--accent-light);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 1.15rem 1.35rem;
+  margin-bottom: 1.25rem;
+}
+.highlight-box.warning {
+  background: #e74c3c0c;
+  border-left-color: var(--danger);
+}
+.highlight-box.success {
+  background: #27ae600c;
+  border-left-color: var(--success);
+}
+.highlight-box strong { color: var(--primary); }
+
+/* Tables */
+.table-wrapper { overflow-x: auto; margin-bottom: 1rem; border-radius: var(--radius); box-shadow: var(--shadow); }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+thead th {
+  background: var(--primary);
+  color: var(--white);
+  padding: 0.7rem 0.85rem;
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+tbody td {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+tbody tr:nth-child(even) { background: var(--gray-100); }
+tbody tr:hover { background: #eaf2f8; }
+
+/* Code/tree */
+.tree-block {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius);
+  font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* Pipeline steps */
+.pipeline { counter-reset: pipe; }
+.pipe-step {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: flex-start;
+}
+.pipe-step::before {
+  counter-increment: pipe;
+  content: counter(pipe);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem; height: 2rem;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--white);
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+.pipe-step .pipe-body { flex: 1; }
+.pipe-step .pipe-body strong { color: var(--primary); }
+
+/* Key-value pairs */
+.kv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.kv-item {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 1rem 1.15rem;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--accent);
+}
+.kv-item .kv-label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); font-weight: 600; margin-bottom: 0.25rem; }
+.kv-item .kv-value { font-size: 1rem; font-weight: 700; color: var(--primary); }
+.kv-item .kv-detail { font-size: 0.8rem; color: var(--gray-700); margin-top: 0.15rem; }
+
+/* Interactive controls */
+.control-group { margin-bottom: 1rem; }
+.control-group label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.9rem; color: var(--primary); }
+.slider-container { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.slider-container input[type="range"] {
+  flex: 1;
+  min-width: 200px;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--gray-300);
+  border-radius: 3px;
+  outline: none;
+}
+.slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.slider-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 3.5rem;
+  padding: 0.3rem 0.6rem;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+select.styled-select {
+  padding: 0.55rem 1rem;
+  border: 2px solid var(--gray-300);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--white);
+  color: var(--gray-900);
+  cursor: pointer;
+  min-width: 220px;
+  transition: border-color 0.2s;
+}
+select.styled-select:focus { outline: none; border-color: var(--accent); }
+
+/* Metric cards row */
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.metric-card {
+  text-align: center;
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 0.85rem 0.5rem;
+  box-shadow: var(--shadow);
+  border-top: 3px solid var(--accent);
+}
+.metric-card .metric-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gray-500); font-weight: 600; }
+.metric-card .metric-value { font-size: 1.35rem; font-weight: 800; color: var(--primary); margin-top: 0.15rem; }
+.metric-card .metric-sub { font-size: 0.72rem; color: var(--gray-500); }
+.metric-card.catboost { border-top-color: var(--accent); }
+.metric-card.lightgbm { border-top-color: var(--success); }
+
+/* Confusion matrix grid */
+.cm-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  grid-template-rows: auto 1fr 1fr;
+  gap: 4px;
+  max-width: 420px;
+  margin: 0 auto 1.25rem;
+  font-size: 0.85rem;
+}
+.cm-corner { background: transparent; }
+.cm-header {
+  text-align: center;
+  font-weight: 700;
+  padding: 0.6rem;
+  color: var(--primary);
+  font-size: 0.78rem;
+}
+.cm-row-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  padding: 0.6rem;
+  color: var(--primary);
+  font-size: 0.78rem;
+}
+.cm-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1.2rem;
+  min-height: 85px;
+}
+.cm-cell .cm-label { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.2rem; }
+.cm-tn { background: #d5f5e3; color: #1e8449; }
+.cm-fp { background: #fadbd8; color: #c0392b; }
+.cm-fn { background: #fadbd8; color: #c0392b; }
+.cm-tp { background: #d4efdf; color: #1e8449; }
+
+/* Chart containers */
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 750px;
+  margin: 0 auto 1.25rem;
+}
+.chart-container canvas { width: 100% !important; }
+
+/* Two-col layout */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* Footer */
+.footer {
+  background: var(--primary);
+  color: rgba(255,255,255,0.7);
+  padding: 2rem 2.5rem;
+  font-size: 0.82rem;
+  text-align: center;
+  line-height: 1.6;
+}
+.footer strong { color: var(--white); }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  :root { --nav-width: 220px; }
+  .sidebar nav a { font-size: 0.76rem; padding: 0.5rem 1rem; }
+  .content-area { padding: 1.5rem 1.5rem 2rem; }
+  .hero { padding: 2.5rem 1.5rem 2rem; }
+  .hero h1 { font-size: 1.7rem; }
+  .two-col { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    width: 260px;
+    transition: left 0.3s;
+  }
+  .sidebar.open { left: 0; }
+  .main-content { margin-left: 0; }
+  .mobile-toggle {
+    display: flex !important;
+    position: fixed;
+    top: 0.75rem; left: 0.75rem;
+    z-index: 1100;
+    width: 40px; height: 40px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+  }
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+  }
+  .mobile-overlay.open { display: block; }
+  .content-area { padding: 1rem 1rem 2rem; }
+  .hero { padding: 3rem 1rem 2rem; }
+  .hero h1 { font-size: 1.4rem; }
+  .kv-grid { grid-template-columns: 1fr; }
+}
+.mobile-toggle { display: none; }
+</style>
+</head>
+<body>
+
+<!-- Mobile toggle -->
+<button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Toggle navigation">☰</button>
+<div class="mobile-overlay" id="mobileOverlay" onclick="toggleSidebar()"></div>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">ES 335 · Course Project</div>
+    <h1>Care Continuum</h1>
+    <div class="subtitle">Predicting 30-Day Hospital Readmission for Diabetic Patients</div>
+  </div>
+  <nav>
+    <a href="#problem" class="active"><span class="nav-num">1</span>Problem Formulation &amp; Scope</a>
+    <a href="#data"><span class="nav-num">2</span>Data Understanding</a>
+    <a href="#preprocessing"><span class="nav-num">3</span>Preprocessing &amp; Statistical Reasoning</a>
+    <a href="#methods"><span class="nav-num">4</span>Baseline &amp; Method Selection</a>
+    <a href="#evaluation"><span class="nav-num">5</span>Evaluation Design &amp; Metrics</a>
+    <a href="#results"><span class="nav-num">6</span>Results, Errors &amp; Limitations</a>
+    <a href="#reproducibility"><span class="nav-num">7</span>Reproducibility &amp; Technical Integrity</a>
+    <a href="#interactive"><span class="nav-num">★</span>Interactive Exploration</a>
+    <a href="#individual"><span class="nav-num">8</span>Individual Understanding</a>
+  </nav>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main-content">
+
+  <!-- Hero -->
+  <header class="hero">
+    <h1>Care Continuum</h1>
+    <p class="tagline">Predicting 30-Day Hospital Readmission for Diabetic Patients Using Clinical Encounter Data from 130 US Hospitals</p>
+    <div class="badge-row">
+      <span class="badge">ES 335 Machine Learning</span>
+      <span class="badge">UCI Diabetes Dataset</span>
+      <span class="badge">100,114 Encounters</span>
+      <span class="badge">5 Models Compared</span>
+      <span class="badge">Patient-Grouped Splits</span>
+    </div>
+  </header>
+
+  <div class="content-area">
+
+    <!-- ============================== SECTION 1 ============================== -->
+    <section class="section" id="problem">
+      <div class="section-header">
+        <span class="section-num">1</span>
+        <h2>Problem Formulation &amp; Scope</h2>
+        <span class="pts">10 pts</span>
+      </div>
+
+      <div class="highlight-box">
+        <strong>Research Question:</strong> "Can we predict whether a diabetic patient will be readmitted to the hospital within 30 days of discharge, using clinical encounter data available at the time of discharge?"
+      </div>
+
+      <div class="kv-grid">
+        <div class="kv-item">
+          <div class="kv-label">Unit of Analysis</div>
+          <div class="kv-value">Hospital Encounter</div>
+          <div class="kv-detail">Each row = one encounter; patients may have multiple encounters</div>
+        </div>
+        <div class="kv-item">
+          <div class="kv-label">Target Variable</div>
+          <div class="kv-value">readmitted_30d</div>
+          <div class="kv-detail">Binary — 1 if original label was "&lt;30", 0 otherwise</div>
+        </div>
+        <div class="kv-item">
+          <div class="kv-label">Prediction Time</div>
+          <div class="kv-value">At Discharge</div>
+          <div class="kv-detail">discharge_disposition_id is included (known only at discharge)</div>
+        </div>
+        <div class="kv-item">
+          <div class="kv-label">Population</div>
+          <div class="kv-value">Diabetic Patients</div>
+          <div class="kv-detail">130 US hospitals, 1999–2008 (UCI ML Repository)</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Scope &amp; Limitations of Claims</div>
+        <ul>
+          <li>This is an <strong>associative / predictive model</strong>, <strong>NOT causal</strong>. We cannot claim that any feature causes readmission.</li>
+          <li>Results apply to the <strong>study population</strong> and have <strong>not been externally validated</strong> on data from other hospitals or time periods.</li>
+          <li>The dataset is <strong>historical (pre-2008)</strong> — clinical practices, coding systems, and treatment protocols may have changed significantly since then.</li>
+          <li>Prediction at discharge <strong>limits the time window for preventive interventions</strong> — earlier warnings (e.g., at admission) would be more actionable but would lose access to discharge-related features.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================== SECTION 2 ============================== -->
+    <section class="section" id="data">
+      <div class="section-header">
+        <span class="section-num">2</span>
+        <h2>Data Understanding</h2>
+        <span class="pts">10 pts</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Data Source</div>
+        <p><strong>UCI Machine Learning Repository</strong> — "Diabetes 130-US Hospitals for Years 1999–2008"</p>
+      </div>
+
+      <div class="kv-grid">
+        <div class="kv-item">
+          <div class="kv-label">Original Size</div>
+          <div class="kv-value">101,766 × 50</div>
+          <div class="kv-detail">101,766 encounters, 50 columns</div>
+        </div>
+        <div class="kv-item">
+          <div class="kv-label">After Cleaning</div>
+          <div class="kv-value">100,114 × 46</div>
+          <div class="kv-detail">1,652 death-related encounters excluded</div>
+        </div>
+        <div class="kv-item">
+          <div class="kv-label">Unique Patients</div>
+          <div class="kv-value">70,439</div>
+          <div class="kv-detail">16,483 with 2+ encounters; max 40 per patient</div>
+        </div>
+        <div class="kv-item">
+          <div class="kv-label">Class Imbalance</div>
+          <div class="kv-value">11.34% Positive</div>
+          <div class="kv-detail">88.66% not readmitted within 30 days</div>
+        </div>
+      </div>
+
+      <!-- Target distribution chart -->
+      <div class="card">
+        <div class="card-title">Target Distribution — Severe Class Imbalance</div>
+        <div class="chart-container" style="max-width:450px;">
+          <canvas id="targetDistChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Feature Categories</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Category</th><th>Features</th><th>Count</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Demographics</td><td>age, race, gender</td><td>3</td></tr>
+              <tr><td>Encounter Info</td><td>time_in_hospital, num_lab_procedures, num_procedures, num_medications, number_outpatient, number_emergency, number_inpatient, number_diagnoses</td><td>8</td></tr>
+              <tr><td>Administrative IDs</td><td>admission_type_id, discharge_disposition_id, admission_source_id, payer_code</td><td>4</td></tr>
+              <tr><td>Diagnoses</td><td>diag_1_group, diag_2_group, diag_3_group (grouped from raw ICD-9 codes)</td><td>3</td></tr>
+              <tr><td>Medications</td><td>metformin, insulin, glipizide, glyburide, pioglitazone, rosiglitazone, glimepiride, repaglinide, nateglinide, glyburide-metformin, change, diabetesMed</td><td>12</td></tr>
+              <tr><td>Lab Results</td><td>max_glu_serum, A1Cresult</td><td>2</td></tr>
+              <tr><td>Clinical Context</td><td>medical_specialty_group</td><td>1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Data Quality Issues Identified &amp; Addressed</div>
+        <ul>
+          <li><strong>weight column:</strong> 97% missing → <em>dropped</em></li>
+          <li><strong>encounter_id:</strong> identifier only → <em>dropped</em></li>
+          <li><strong>2 constant drug columns</strong> (examide, citoglipton): zero variation → <em>dropped</em></li>
+          <li><strong>11 near-constant drug columns</strong> (&lt;0.5% variation): verified with Fisher exact tests, no readmission association → <em>dropped</em></li>
+          <li><strong>1,652 death-related encounters</strong> (discharge codes 11, 19, 20, 21): verified against IDS_mapping.csv → <em>excluded</em></li>
+          <li><strong>Hospice encounters</strong> (codes 13, 14): explicitly <em>retained</em></li>
+          <li><strong>3 Gender "Unknown/Invalid" records:</strong> preserved unchanged</li>
+          <li><strong>Raw ICD-9 diagnosis codes:</strong> grouped into 9 clinical categories</li>
+          <li><strong>73+ medical specialties:</strong> grouped into 17 meaningful categories</li>
+          <li><strong>Lab results</strong> (max_glu_serum, A1Cresult): blank/None values recoded to semantic "Not measured" category</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================== SECTION 3 ============================== -->
+    <section class="section" id="preprocessing">
+      <div class="section-header">
+        <span class="section-num">3</span>
+        <h2>Preprocessing &amp; Statistical Reasoning</h2>
+        <span class="pts">10 pts</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Data Pipeline — Ordered Transformation Steps</div>
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-body">
+              <strong>Level 1 Cleaning (Rule-Based)</strong><br>
+              Exclude death-related discharges, create binary target <code>readmitted_30d</code>, drop identifiers &amp; constant columns, fill approved Unknown fields.
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-body">
+              <strong>Diagnosis Grouping</strong><br>
+              Raw ICD-9 codes → 9 clinical categories: Circulatory, Respiratory, Digestive, Diabetes, Injury, Musculoskeletal, Genitourinary, Neoplasms, Other, Missing.
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-body">
+              <strong>Specialty Grouping</strong><br>
+              73+ raw medical specialties → 17 clinically meaningful groups (Unknown, General/Internal Medicine, Emergency Medicine, etc.).
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-body">
+              <strong>Drug Feature Pruning</strong><br>
+              11 near-constant drug columns removed after statistical verification: Fisher exact test with Benjamini-Hochberg correction — <strong>all adjusted p-values = 1.0</strong>, confirming no association with readmission.
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-body">
+              <strong>Numeric Features (8 columns)</strong><br>
+              Median imputation + StandardScaler. Learned statistics are refit inside each CV fold.
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-body">
+              <strong>Categorical Features (25 columns)</strong><br>
+              Constant imputation to "Unknown" + <code>OneHotEncoder(handle_unknown="ignore")</code>. Encoding is refit inside each CV fold.
+            </div>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-body">
+              <strong>Final Feature Space</strong><br>
+              <strong>189 encoded features</strong> ready for model training.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box success">
+        <strong>🔒 Critical Leakage Prevention Measures</strong>
+        <ul style="margin-top:0.5rem;">
+          <li><strong>Patient-level splitting</strong> using <code>GroupShuffleSplit</code> by <code>patient_nbr</code> — all encounters for a patient go to the SAME split</li>
+          <li><strong>Preprocessing refit inside each CV fold</strong> — imputation, scaling, and encoding parameters are learned only from training data within each fold. No information from validation/test data leaks into training.</li>
+          <li><strong>The held-out test set has NEVER been evaluated</strong> — final conclusions await test evaluation</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================== SECTION 4 ============================== -->
+    <section class="section" id="methods">
+      <div class="section-header">
+        <span class="section-num">4</span>
+        <h2>Baseline &amp; Method Selection</h2>
+        <span class="pts">15 pts</span>
+      </div>
+
+      <div class="card" style="border-left: 4px solid var(--warning);">
+        <div class="card-title">Baseline: Unweighted Logistic Regression</div>
+        <p>The simplest parametric classifier and a standard starting point for clinical prediction tasks. Uses L2 regularization (C=1.0), solver=lbfgs, max_iter=2000, random_state=42.</p>
+        <p style="margin-top:0.5rem;"><strong>Rationale:</strong> Serves as an interpretability reference — if complex models don't substantially outperform logistic regression, the predictive signal may be inherently weak.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Models Compared &amp; Rationale</div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>#</th><th>Model</th><th>Key Configuration</th><th>Why Selected</th></tr></thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td><strong>Class-Weighted LR</strong></td>
+                <td>class_weight="balanced"</td>
+                <td>Addresses the 11% positive rate; tests whether reweighting helps the baseline</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td><strong>Random Forest</strong></td>
+                <td>300 trees, balanced_subsample, sqrt features</td>
+                <td>Captures nonlinear feature interactions; handles mixed feature types</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td><strong>Feature Engineering Experiment</strong></td>
+                <td>RF + medication_changes_count + has_specialty</td>
+                <td>Tests whether hand-crafted features add value</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td><strong>CatBoost</strong></td>
+                <td>1000 iter, depth=6, lr=0.05, auto_class_weights=Balanced</td>
+                <td>Gradient boosting with native categorical handling, no one-hot encoding needed</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td><strong>LightGBM</strong></td>
+                <td>1000 estimators, lr=0.05, num_leaves=31, class_weight=balanced</td>
+                <td>Gradient boosting with different regularization strategy</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="highlight-box warning">
+        <strong>⚠️ Feature Engineering Result:</strong> Adding <code>medication_changes_count</code> and <code>has_specialty</code> to Random Forest produced <strong>slightly worse</strong> results — CV PR-AUC: 0.217 vs 0.219 baseline; Validation PR-AUC: 0.201 vs 0.205 baseline. These features were <strong>not adopted</strong>.
+      </div>
+
+      <div class="highlight-box">
+        <strong>Key Observation:</strong> <code>discharge_disposition_id</code> is included because predictions are made at discharge. If predictions were needed at admission, this feature (ranked #3 in importance) would need to be removed, likely reducing model performance.
+      </div>
+    </section>
+
+    <!-- ============================== SECTION 5 ============================== -->
+    <section class="section" id="evaluation">
+      <div class="section-header">
+        <span class="section-num">5</span>
+        <h2>Evaluation Design &amp; Metrics</h2>
+        <span class="pts">20 pts</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Split Strategy — Patient-Disjoint Partitions</div>
+        <div class="kv-grid">
+          <div class="kv-item" style="border-top-color:var(--success);">
+            <div class="kv-label">Training Set</div>
+            <div class="kv-value">65,110</div>
+            <div class="kv-detail">45,785 unique patients</div>
+          </div>
+          <div class="kv-item" style="border-top-color:var(--warning);">
+            <div class="kv-label">Validation Set</div>
+            <div class="kv-value">15,049</div>
+            <div class="kv-detail">Patient-disjoint from train &amp; test</div>
+          </div>
+          <div class="kv-item" style="border-top-color:var(--danger);">
+            <div class="kv-label">Test Set (Locked)</div>
+            <div class="kv-value">19,955</div>
+            <div class="kv-detail">NEVER scored — reserved for final evaluation</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Cross-Validation Design</div>
+        <ul>
+          <li><strong>5-fold GroupKFold</strong> by <code>patient_nbr</code> within the training split</li>
+          <li>Preprocessing pipeline <strong>refit inside every fold</strong></li>
+          <li>Prevents <strong>patient-level leakage</strong> between folds — no patient's encounters appear in both train and validation within any fold</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Metrics Selected &amp; Justification</div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Metric</th><th>Why Selected</th></tr></thead>
+            <tbody>
+              <tr><td><strong>PR-AUC (Avg. Precision)</strong></td><td><strong>Primary metric.</strong> Appropriate for imbalanced classification — focuses on minority class performance without being inflated by easy negatives.</td></tr>
+              <tr><td><strong>ROC-AUC</strong></td><td>Threshold-independent discrimination measure; allows comparison with published baselines.</td></tr>
+              <tr><td><strong>F1 Score</strong></td><td>Harmonic mean of precision &amp; recall at a specific threshold; single-number summary for threshold-dependent performance.</td></tr>
+              <tr><td><strong>Precision &amp; Recall</strong></td><td>Directly interpretable for clinical decision-making: "Of those we flag, how many are truly readmitted?" vs "Of those truly readmitted, how many do we catch?"</td></tr>
+              <tr><td><strong>Balanced Accuracy</strong></td><td>Adjusts for class imbalance; average of per-class recall.</td></tr>
+              <tr><td><strong>Accuracy</strong></td><td>Reported but explicitly noted as <strong>misleading</strong> — 88.6% "accuracy" is just the majority-class rate.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="highlight-box warning">
+        <strong>⚠️ Threshold Analysis Caveat:</strong> Best-F1 thresholds are <strong>selected AND evaluated on the same validation set</strong>, so they are optimistic estimates. This is clearly stated throughout and NOT presented as unbiased results.
+      </div>
+    </section>
+
+    <!-- ============================== SECTION 6 ============================== -->
+    <section class="section" id="results">
+      <div class="section-header">
+        <span class="section-num">6</span>
+        <h2>Results, Errors &amp; Limitations</h2>
+        <span class="pts">10 pts</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Model Comparison — Validation Set at Threshold 0.5</div>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Model</th><th>TN</th><th>FP</th><th>FN</th><th>TP</th><th>Accuracy</th><th>Bal. Acc</th><th>Precision</th><th>Recall</th><th>F1</th><th>PR-AUC</th><th>ROC-AUC</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Unweighted LR (Baseline)</td><td>13,298</td><td>41</td><td>1,675</td><td>35</td><td>0.886</td><td>0.509</td><td>0.461</td><td>0.020</td><td>0.039</td><td>0.203</td><td>0.654</td></tr>
+              <tr><td>Class-Weighted LR</td><td>9,024</td><td>4,315</td><td>798</td><td>912</td><td>0.660</td><td>0.605</td><td>0.174</td><td>0.533</td><td>0.263</td><td>0.203</td><td>0.655</td></tr>
+              <tr><td>Random Forest</td><td>13,308</td><td>31</td><td>1,680</td><td>30</td><td>0.886</td><td>0.508</td><td>0.492</td><td>0.018</td><td>0.034</td><td>0.205</td><td>0.653</td></tr>
+              <tr style="background:#eaf6ee;"><td><strong>CatBoost</strong></td><td>9,435</td><td>3,904</td><td>832</td><td>878</td><td>0.685</td><td>0.610</td><td>0.184</td><td>0.513</td><td>0.270</td><td><strong>0.213</strong></td><td><strong>0.661</strong></td></tr>
+              <tr><td>LightGBM</td><td>10,345</td><td>2,994</td><td>993</td><td>717</td><td>0.735</td><td>0.597</td><td>0.193</td><td>0.419</td><td>0.265</td><td>0.203</td><td>0.647</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Grouped Cross-Validation Results (Training Split)</div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Model</th><th>PR-AUC</th><th>ROC-AUC</th><th>F1</th><th>Balanced Acc</th></tr></thead>
+            <tbody>
+              <tr><td>Random Forest</td><td>0.219</td><td>0.669</td><td>0.024</td><td>0.505</td></tr>
+              <tr style="background:#eaf6ee;"><td><strong>CatBoost</strong></td><td><strong>0.227</strong></td><td><strong>0.669</strong></td><td><strong>0.280</strong></td><td><strong>0.618</strong></td></tr>
+              <tr><td>LightGBM</td><td>0.217</td><td>0.659</td><td>0.270</td><td>0.599</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Exploratory Best-F1 Thresholds (Validation — Optimistic Estimates)</div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>Model</th><th>Best Threshold</th><th>Precision</th><th>Recall</th><th>F1</th></tr></thead>
+            <tbody>
+              <tr><td>Unweighted LR</td><td>0.139</td><td>20.4%</td><td>38.9%</td><td>0.268</td></tr>
+              <tr><td>Weighted LR</td><td>0.552</td><td>20.2%</td><td>40.8%</td><td>0.270</td></tr>
+              <tr><td>Random Forest</td><td>0.256</td><td>19.6%</td><td>44.6%</td><td>0.272</td></tr>
+              <tr style="background:#eaf6ee;"><td><strong>CatBoost</strong></td><td>0.570</td><td>22.8%</td><td>36.8%</td><td><strong>0.282</strong></td></tr>
+              <tr><td>LightGBM</td><td>0.505</td><td>19.6%</td><td>41.2%</td><td>0.265</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Feature Importance Chart -->
+      <div class="card">
+        <div class="card-title">CatBoost Feature Importance — Top 10 Features</div>
+        <div class="chart-container" style="max-width:680px; min-height:320px;">
+          <canvas id="featureImportanceChart"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Key Findings — Presented Honestly</div>
+        <ol>
+          <li style="margin-bottom:0.7rem;"><strong>All models achieve similar discrimination:</strong> PR-AUC ranges from 0.203–0.213 on validation and 0.217–0.227 on grouped CV. The differences are small and may not be reliable.</li>
+          <li style="margin-bottom:0.7rem;"><strong>CatBoost is marginally best:</strong> highest validation PR-AUC (0.213), highest CV PR-AUC (0.227), and highest exploratory F1 (0.282). But the margin over other models is small.</li>
+          <li style="margin-bottom:0.7rem;"><strong>88.6% accuracy is misleading:</strong> the baseline rate is 88.7% — a model that predicts "not readmitted" for everyone achieves similar accuracy.</li>
+          <li style="margin-bottom:0.7rem;"><strong>The precision-recall tradeoff is harsh:</strong> at any threshold giving reasonable recall (&gt;30%), precision drops below 25%. The best F1 across all models is only 0.282.</li>
+          <li style="margin-bottom:0.7rem;"><strong>Feature engineering did not help:</strong> adding <code>medication_changes_count</code> and <code>has_specialty</code> to Random Forest produced slightly worse results.</li>
+          <li><strong>Encounter-level features dominate:</strong> lab procedures, medications, discharge disposition, and diagnosis group are the most important features — not demographics.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Limitations</div>
+        <ul>
+          <li>PR-AUC around 0.20 means the model's discriminative power is limited; <strong>~80% of flagged patients would be false positives</strong> at reasonable recall.</li>
+          <li>The dataset is from <strong>1999–2008</strong> and may not reflect modern clinical practices, treatments, or coding systems.</li>
+          <li>Prediction at discharge <strong>limits the time window</strong> for preventive interventions.</li>
+          <li><code>discharge_disposition_id</code> (3rd most important feature) encodes discharge destination, which may partly encode the outcome being predicted.</li>
+          <li><strong>No external validation</strong> on data from other hospitals or time periods.</li>
+          <li>Multiple encounters per patient create dependency; models treat encounters as independent given the patient-grouped split.</li>
+          <li>The feature engineering experiment tested only <strong>two additional features</strong>; other transformations may exist but were not explored.</li>
+          <li>Threshold selection on the <strong>same validation set inflates</strong> reported best-F1 values.</li>
+          <li><strong>Test set performance remains unknown</strong> — final conclusions await test evaluation.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================== SECTION 7 ============================== -->
+    <section class="section" id="reproducibility">
+      <div class="section-header">
+        <span class="section-num">7</span>
+        <h2>Reproducibility &amp; Technical Integrity</h2>
+        <span class="pts">5 pts</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Repository Structure</div>
+        <div class="tree-block">Care Continum/
+├── dataset/
+│   ├── diabetic_data.xlsx              (original UCI dataset)
+│   ├── diabetic_data_cleaned.csv       (after Level 1 cleaning)
+│   ├── diabetic_data_diagnosis_grouped(1).csv
+│   ├── diabetic_data_specialty_grouped(2).csv
+│   ├── diabetic_data_drugs_pruned(3).csv
+│   ├── split_assignments.csv           (patient-grouped splits)
+│   ├── X_train.npz, X_validation.npz, X_test.npz
+│   └── y_train.csv, y_validation.csv, y_test.csv
+├── data_cleaning/
+│   ├── clean_datav1.py
+│   └── data_cleaning_audit.txt
+├── Preprocessing/
+│   ├── prepare_model_data.py
+│   ├── diagnoses_grouping.py
+│   ├── medical_specality_grouping.py
+│   ├── analyze_drug_features.py
+│   └── model_ready/  (preprocessor, metadata, audits)
+├── Training/
+│   ├── train_logistic_regression_care_continuum.py
+│   ├── train_class_weighted_logistic_regression_care_continuum.py
+│   ├── train_random_forest_leakage_aware.py
+│   ├── train_random_forest_feature_engineering_experiment.py
+│   ├── train_catboost.py
+│   └── train_lightgbm.py
+├── models/  (saved models, metrics, predictions per model)
+└── Reports/  (summaries, comparisons, drug verification)</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">How to Reproduce</div>
+        <ol>
+          <li style="margin-bottom:0.5rem;"><strong>Download</strong> the UCI Diabetes 130-US Hospitals dataset from the UCI Machine Learning Repository.</li>
+          <li style="margin-bottom:0.5rem;"><strong>Run</strong> <code>data_cleaning/clean_datav1.py</code> — creates cleaned CSV and an audit log documenting every transformation.</li>
+          <li style="margin-bottom:0.5rem;"><strong>Run preprocessing scripts in order:</strong> <code>diagnoses_grouping.py</code> → <code>medical_specality_grouping.py</code> → <code>analyze_drug_features.py</code> → <code>prepare_model_data.py</code></li>
+          <li style="margin-bottom:0.5rem;"><strong>Run any training script</strong> from <code>Training/</code> — each verifies split alignment and patient disjointness before training.</li>
+          <li><strong>All random seeds are fixed (42);</strong> splits are deterministic and saved to <code>split_assignments.csv</code>.</li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Data Handling Practices</div>
+        <ul>
+          <li><strong>Original data is never modified</strong> — each preprocessing step produces a new output file with a numbered suffix.</li>
+          <li><strong>Patient identifiers</strong> (<code>patient_nbr</code>) are used only for grouping splits, never as model features.</li>
+          <li><strong>Test set was never evaluated</strong> — reserved for final assessment after all modeling decisions are locked.</li>
+          <li><strong>AI tools</strong> were used for code development and analysis (disclosed transparently).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================== INTERACTIVE SECTION ============================== -->
+    <section class="section" id="interactive">
+      <div class="section-header">
+        <span class="section-num">★</span>
+        <h2>Interactive Exploration</h2>
+        <span class="pts">15 pts (Website + Interaction)</span>
+      </div>
+
+      <p style="margin-bottom:1.5rem; font-size:0.92rem; color:var(--gray-700);">
+        These interactive tools allow you to explore model performance beyond static tables. Adjust parameters to understand the precision-recall tradeoffs and compare models side-by-side.
+      </p>
+
+      <!-- ---- THRESHOLD EXPLORER ---- -->
+      <div class="card" id="threshold-explorer">
+        <div class="card-title" style="font-size:1.15rem;">🎛️ Threshold Explorer — Precision / Recall / F1 vs. Classification Threshold</div>
+        <p style="font-size:0.85rem; color:var(--gray-500); margin-bottom:1rem;">
+          Move the slider to see how changing the classification threshold affects precision, recall, and F1 score for CatBoost and LightGBM. The chart updates in real-time.
+        </p>
+
+        <div class="control-group">
+          <label for="thresholdSlider">Classification Threshold</label>
+          <div class="slider-container">
+            <input type="range" id="thresholdSlider" min="1" max="95" value="50" step="1">
+            <span class="slider-value" id="thresholdValue">0.50</span>
+          </div>
+        </div>
+
+        <div class="two-col" style="margin-bottom:1.25rem;">
+          <div>
+            <h4 style="color:var(--accent); font-size:0.9rem; margin-bottom:0.5rem;">CatBoost at threshold <span id="cbThreshLabel">0.50</span></h4>
+            <div class="metric-row" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="metric-card catboost">
+                <div class="metric-label">Precision</div>
+                <div class="metric-value" id="cbPrecision">0.184</div>
+              </div>
+              <div class="metric-card catboost">
+                <div class="metric-label">Recall</div>
+                <div class="metric-value" id="cbRecall">0.513</div>
+              </div>
+              <div class="metric-card catboost">
+                <div class="metric-label">F1</div>
+                <div class="metric-value" id="cbF1">0.270</div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 style="color:var(--success); font-size:0.9rem; margin-bottom:0.5rem;">LightGBM at threshold <span id="lgThreshLabel">0.50</span></h4>
+            <div class="metric-row" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="metric-card lightgbm">
+                <div class="metric-label">Precision</div>
+                <div class="metric-value" id="lgPrecision">0.193</div>
+              </div>
+              <div class="metric-card lightgbm">
+                <div class="metric-label">Recall</div>
+                <div class="metric-value" id="lgRecall">0.419</div>
+              </div>
+              <div class="metric-card lightgbm">
+                <div class="metric-label">F1</div>
+                <div class="metric-value" id="lgF1">0.265</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-container" style="max-width:800px; min-height:380px;">
+          <canvas id="thresholdChart"></canvas>
+        </div>
+      </div>
+
+      <!-- ---- CONFUSION MATRIX EXPLORER ---- -->
+      <div class="card" id="confusion-matrix-explorer">
+        <div class="card-title" style="font-size:1.15rem;">🔍 Confusion Matrix Explorer — Compare Models Side-by-Side</div>
+        <p style="font-size:0.85rem; color:var(--gray-500); margin-bottom:1rem;">
+          Select a model to view its confusion matrix and derived metrics on the validation set (threshold = 0.5).
+        </p>
+
+        <div class="control-group">
+          <label for="modelSelect">Select Model</label>
+          <select class="styled-select" id="modelSelect">
+            <option value="0">Unweighted LR (Baseline)</option>
+            <option value="1">Class-Weighted LR</option>
+            <option value="2">Random Forest</option>
+            <option value="3" selected>CatBoost</option>
+            <option value="4">LightGBM</option>
+          </select>
+        </div>
+
+        <h4 style="text-align:center; color:var(--primary); margin-bottom:0.75rem;" id="cmModelTitle">CatBoost</h4>
+
+        <div class="cm-grid" id="cmGrid">
+          <div class="cm-corner"></div>
+          <div class="cm-header">Predicted Negative</div>
+          <div class="cm-header">Predicted Positive</div>
+          <div class="cm-row-label">Actual Negative</div>
+          <div class="cm-cell cm-tn" id="cmTN"><span class="cm-label">TN</span><span id="cmTNval">9,435</span></div>
+          <div class="cm-cell cm-fp" id="cmFP"><span class="cm-label">FP</span><span id="cmFPval">3,904</span></div>
+          <div class="cm-row-label">Actual Positive</div>
+          <div class="cm-cell cm-fn" id="cmFN"><span class="cm-label">FN</span><span id="cmFNval">832</span></div>
+          <div class="cm-cell cm-tp" id="cmTP"><span class="cm-label">TP</span><span id="cmTPval">878</span></div>
+        </div>
+
+        <div class="metric-row" style="max-width:700px; margin:0 auto;">
+          <div class="metric-card">
+            <div class="metric-label">Accuracy</div>
+            <div class="metric-value" id="cmAccuracy">0.685</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Bal. Accuracy</div>
+            <div class="metric-value" id="cmBalAcc">0.610</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Precision</div>
+            <div class="metric-value" id="cmPrecision">0.184</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Recall</div>
+            <div class="metric-value" id="cmRecall">0.513</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">F1</div>
+            <div class="metric-value" id="cmF1">0.270</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">PR-AUC</div>
+            <div class="metric-value" id="cmPRAUC">0.213</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">ROC-AUC</div>
+            <div class="metric-value" id="cmROCAUC">0.661</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== SECTION 8 ============================== -->
+    <section class="section" id="individual">
+      <div class="section-header">
+        <span class="section-num">8</span>
+        <h2>Individual Understanding &amp; Defense</h2>
+        <span class="pts">5 pts</span>
+      </div>
+
+      <div class="card">
+        <p style="text-align:center; padding:2rem 1rem; color:var(--gray-500); font-style:italic; font-size:0.95rem;">
+          Each team member's individual contribution, key choices they made, evaluation of their work, a limitation they identified, and a small change they would make are documented during the oral defense.
+        </p>
+      </div>
+    </section>
+
+  </div><!-- /content-area -->
+
+  <!-- Footer -->
+  <footer class="footer">
+    <strong>Care Continuum</strong> — ES 335: Machine Learning · Course Project<br>
+    Predicting 30-Day Hospital Readmission for Diabetic Patients<br>
+    Data Source: UCI Machine Learning Repository · 130 US Hospitals, 1999–2008<br>
+    <span style="opacity:0.6; font-size:0.75rem;">Built with transparency, reproducibility, and honest reporting of results and limitations.</span>
+  </footer>
+
+</div><!-- /main-content -->
+
+<!-- ===== JAVASCRIPT ===== -->
+<script>
+// ============================================================
+//  DATA
+// ============================================================
+
+// --- Threshold sweep data ---
+const catboostData = [
+  {t:0.01,p:0.114,r:1.000,f:0.204},
+  {t:0.05,p:0.114,r:1.000,f:0.204},
+  {t:0.10,p:0.114,r:0.998,f:0.205},
+  {t:0.15,p:0.115,r:0.995,f:0.206},
+  {t:0.20,p:0.118,r:0.987,f:0.210},
+  {t:0.25,p:0.122,r:0.963,f:0.217},
+  {t:0.30,p:0.128,r:0.906,f:0.225},
+  {t:0.35,p:0.139,r:0.842,f:0.239},
+  {t:0.40,p:0.150,r:0.739,f:0.250},
+  {t:0.45,p:0.167,r:0.635,f:0.264},
+  {t:0.50,p:0.184,r:0.513,f:0.270},
+  {t:0.55,p:0.211,r:0.401,f:0.276},
+  {t:0.57,p:0.228,r:0.368,f:0.282},
+  {t:0.60,p:0.240,r:0.304,f:0.268},
+  {t:0.65,p:0.276,r:0.215,f:0.241},
+  {t:0.70,p:0.313,r:0.144,f:0.198},
+  {t:0.75,p:0.350,r:0.096,f:0.151},
+  {t:0.80,p:0.331,r:0.047,f:0.082},
+  {t:0.85,p:0.409,r:0.016,f:0.031},
+  {t:0.90,p:0.444,r:0.002,f:0.005}
+];
+
+const lightgbmData = [
+  {t:0.01,p:0.114,r:1.000,f:0.204},
+  {t:0.05,p:0.114,r:0.998,f:0.205},
+  {t:0.10,p:0.117,r:0.985,f:0.209},
+  {t:0.15,p:0.121,r:0.956,f:0.215},
+  {t:0.20,p:0.128,r:0.922,f:0.224},
+  {t:0.25,p:0.133,r:0.852,f:0.230},
+  {t:0.30,p:0.141,r:0.780,f:0.238},
+  {t:0.35,p:0.151,r:0.704,f:0.248},
+  {t:0.40,p:0.164,r:0.624,f:0.260},
+  {t:0.45,p:0.176,r:0.519,f:0.263},
+  {t:0.50,p:0.193,r:0.419,f:0.265},
+  {t:0.505,p:0.196,r:0.412,f:0.265},
+  {t:0.55,p:0.207,r:0.311,f:0.248},
+  {t:0.60,p:0.227,r:0.227,f:0.227},
+  {t:0.65,p:0.275,r:0.168,f:0.208},
+  {t:0.70,p:0.325,r:0.116,f:0.171},
+  {t:0.75,p:0.355,r:0.070,f:0.117},
+  {t:0.80,p:0.378,r:0.042,f:0.075},
+  {t:0.85,p:0.448,r:0.023,f:0.043},
+  {t:0.90,p:0.400,r:0.002,f:0.005}
+];
+
+// --- Confusion matrix data ---
+const modelData = [
+  {name:"Unweighted LR (Baseline)", tn:13298, fp:41, fn:1675, tp:35, acc:0.886, bal:0.509, prec:0.461, rec:0.020, f1:0.039, prauc:0.203, rocauc:0.654},
+  {name:"Class-Weighted LR", tn:9024, fp:4315, fn:798, tp:912, acc:0.660, bal:0.605, prec:0.174, rec:0.533, f1:0.263, prauc:0.203, rocauc:0.655},
+  {name:"Random Forest", tn:13308, fp:31, fn:1680, tp:30, acc:0.886, bal:0.508, prec:0.492, rec:0.018, f1:0.034, prauc:0.205, rocauc:0.653},
+  {name:"CatBoost", tn:9435, fp:3904, fn:832, tp:878, acc:0.685, bal:0.610, prec:0.184, rec:0.513, f1:0.270, prauc:0.213, rocauc:0.661},
+  {name:"LightGBM", tn:10345, fp:2994, fn:993, tp:717, acc:0.735, bal:0.597, prec:0.193, rec:0.419, f1:0.265, prauc:0.203, rocauc:0.647}
+];
+
+
+// ============================================================
+//  INTERPOLATION HELPER
+// ============================================================
+function interpolate(data, threshold) {
+  if (threshold <= data[0].t) return {p: data[0].p, r: data[0].r, f: data[0].f};
+  if (threshold >= data[data.length-1].t) return {p: data[data.length-1].p, r: data[data.length-1].r, f: data[data.length-1].f};
+  for (let i = 0; i < data.length - 1; i++) {
+    if (threshold >= data[i].t && threshold <= data[i+1].t) {
+      const ratio = (threshold - data[i].t) / (data[i+1].t - data[i].t);
+      return {
+        p: +(data[i].p + ratio * (data[i+1].p - data[i].p)).toFixed(3),
+        r: +(data[i].r + ratio * (data[i+1].r - data[i].r)).toFixed(3),
+        f: +(data[i].f + ratio * (data[i+1].f - data[i].f)).toFixed(3)
+      };
+    }
+  }
+  return {p:0, r:0, f:0};
+}
+
+
+// ============================================================
+//  CHART 1: TARGET DISTRIBUTION (Doughnut)
+// ============================================================
+new Chart(document.getElementById('targetDistChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Not Readmitted (0): 88,757', 'Readmitted <30d (1): 11,357'],
+    datasets: [{
+      data: [88757, 11357],
+      backgroundColor: ['#2980b9', '#e74c3c'],
+      borderWidth: 2,
+      borderColor: '#fff'
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 13 }, padding: 16 } },
+      title: { display: false }
+    },
+    cutout: '55%'
+  }
+});
+
+
+// ============================================================
+//  CHART 2: FEATURE IMPORTANCE (Horizontal Bar)
+// ============================================================
+const featureLabels = [
+  'payer_code', 'number_diagnoses', 'diag_2_group', 'age',
+  'time_in_hospital', 'number_inpatient', 'diag_1_group',
+  'discharge_disposition_id', 'num_medications', 'num_lab_procedures'
+];
+const featureValues = [3.68, 4.16, 4.80, 4.88, 5.42, 6.09, 7.51, 7.96, 8.10, 9.15];
+
+new Chart(document.getElementById('featureImportanceChart'), {
+  type: 'bar',
+  data: {
+    labels: featureLabels,
+    datasets: [{
+      label: 'Feature Importance (%)',
+      data: featureValues,
+      backgroundColor: featureValues.map((v, i) => {
+        const intensity = 0.4 + (i / featureLabels.length) * 0.6;
+        return `rgba(41, 128, 185, ${intensity})`;
+      }),
+      borderColor: '#2980b9',
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => `Importance: ${ctx.parsed.x}%` } }
+    },
+    scales: {
+      x: {
+        title: { display: true, text: 'Importance (%)', font: { size: 13, weight: 'bold' } },
+        beginAtZero: true,
+        grid: { color: '#eee' }
+      },
+      y: {
+        ticks: { font: { size: 12 } },
+        grid: { display: false }
+      }
+    }
+  }
+});
+
+
+// ============================================================
+//  CHART 3: THRESHOLD EXPLORER
+// ============================================================
+const thresholdCtx = document.getElementById('thresholdChart').getContext('2d');
+const thresholdChart = new Chart(thresholdCtx, {
+  type: 'line',
+  data: {
+    labels: catboostData.map(d => d.t.toFixed(2)),
+    datasets: [
+      {
+        label: 'CatBoost Precision',
+        data: catboostData.map(d => d.p),
+        borderColor: '#2980b9',
+        backgroundColor: '#2980b920',
+        borderWidth: 2.5,
+        tension: 0.3,
+        pointRadius: 3,
+        pointHoverRadius: 6
+      },
+      {
+        label: 'CatBoost Recall',
+        data: catboostData.map(d => d.r),
+        borderColor: '#1a5276',
+        backgroundColor: '#1a527620',
+        borderWidth: 2.5,
+        borderDash: [6, 3],
+        tension: 0.3,
+        pointRadius: 3,
+        pointHoverRadius: 6
+      },
+      {
+        label: 'CatBoost F1',
+        data: catboostData.map(d => d.f),
+        borderColor: '#f39c12',
+        backgroundColor: '#f39c1220',
+        borderWidth: 3,
+        tension: 0.3,
+        pointRadius: 3,
+        pointHoverRadius: 6
+      },
+      {
+        label: 'LightGBM Precision',
+        data: lightgbmData.map(d => d.p),
+        borderColor: '#27ae60',
+        backgroundColor: '#27ae6020',
+        borderWidth: 2.5,
+        tension: 0.3,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        pointStyle: 'rect'
+      },
+      {
+        label: 'LightGBM Recall',
+        data: lightgbmData.map(d => d.r),
+        borderColor: '#1e8449',
+        backgroundColor: '#1e844920',
+        borderWidth: 2.5,
+        borderDash: [6, 3],
+        tension: 0.3,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        pointStyle: 'rect'
+      },
+      {
+        label: 'LightGBM F1',
+        data: lightgbmData.map(d => d.f),
+        borderColor: '#e67e22',
+        backgroundColor: '#e67e2220',
+        borderWidth: 3,
+        borderDash: [2, 2],
+        tension: 0.3,
+        pointRadius: 3,
+        pointHoverRadius: 6,
+        pointStyle: 'rect'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { position: 'bottom', labels: { font: { size: 11 }, usePointStyle: true, padding: 12 } },
+      title: { display: true, text: 'Precision, Recall & F1 vs. Classification Threshold', font: { size: 14, weight: 'bold' }, color: '#1a5276', padding: { bottom: 12 } },
+      annotation: {}
+    },
+    scales: {
+      x: {
+        title: { display: true, text: 'Threshold', font: { size: 12, weight: 'bold' } },
+        grid: { color: '#f0f0f0' }
+      },
+      y: {
+        title: { display: true, text: 'Metric Value', font: { size: 12, weight: 'bold' } },
+        min: 0, max: 1.05,
+        grid: { color: '#f0f0f0' }
+      }
+    }
+  },
+  plugins: [{
+    id: 'thresholdLine',
+    afterDraw(chart) {
+      const slider = document.getElementById('thresholdSlider');
+      const threshold = slider.value / 100;
+      const xScale = chart.scales.x;
+      const yScale = chart.scales.y;
+
+      // Find pixel position by interpolating between tick positions
+      const labels = catboostData.map(d => d.t);
+      let xPixel;
+      if (threshold <= labels[0]) {
+        xPixel = xScale.getPixelForValue(0);
+      } else if (threshold >= labels[labels.length - 1]) {
+        xPixel = xScale.getPixelForValue(labels.length - 1);
+      } else {
+        for (let i = 0; i < labels.length - 1; i++) {
+          if (threshold >= labels[i] && threshold <= labels[i + 1]) {
+            const ratio = (threshold - labels[i]) / (labels[i + 1] - labels[i]);
+            const px1 = xScale.getPixelForValue(i);
+            const px2 = xScale.getPixelForValue(i + 1);
+            xPixel = px1 + ratio * (px2 - px1);
+            break;
+          }
+        }
+      }
+
+      if (xPixel !== undefined) {
+        const ctx = chart.ctx;
+        ctx.save();
+        ctx.beginPath();
+        ctx.setLineDash([5, 5]);
+        ctx.strokeStyle = '#e74c3c';
+        ctx.lineWidth = 2;
+        ctx.moveTo(xPixel, yScale.top);
+        ctx.lineTo(xPixel, yScale.bottom);
+        ctx.stroke();
+        ctx.restore();
+
+        // Label
+        ctx.save();
+        ctx.fillStyle = '#e74c3c';
+        ctx.font = 'bold 11px -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`τ = ${threshold.toFixed(2)}`, xPixel, yScale.top - 6);
+        ctx.restore();
+      }
+    }
+  }]
+});
+
+
+// ============================================================
+//  THRESHOLD SLIDER HANDLER
+// ============================================================
+const slider = document.getElementById('thresholdSlider');
+slider.addEventListener('input', function() {
+  const threshold = this.value / 100;
+  document.getElementById('thresholdValue').textContent = threshold.toFixed(2);
+  document.getElementById('cbThreshLabel').textContent = threshold.toFixed(2);
+  document.getElementById('lgThreshLabel').textContent = threshold.toFixed(2);
+
+  const cb = interpolate(catboostData, threshold);
+  const lg = interpolate(lightgbmData, threshold);
+
+  document.getElementById('cbPrecision').textContent = cb.p.toFixed(3);
+  document.getElementById('cbRecall').textContent = cb.r.toFixed(3);
+  document.getElementById('cbF1').textContent = cb.f.toFixed(3);
+  document.getElementById('lgPrecision').textContent = lg.p.toFixed(3);
+  document.getElementById('lgRecall').textContent = lg.r.toFixed(3);
+  document.getElementById('lgF1').textContent = lg.f.toFixed(3);
+
+  // Redraw chart to update threshold line
+  thresholdChart.update('none');
+});
+
+
+// ============================================================
+//  CONFUSION MATRIX EXPLORER
+// ============================================================
+const modelSelect = document.getElementById('modelSelect');
+modelSelect.addEventListener('change', updateConfusionMatrix);
+
+function updateConfusionMatrix() {
+  const idx = parseInt(modelSelect.value);
+  const m = modelData[idx];
+
+  document.getElementById('cmModelTitle').textContent = m.name;
+  document.getElementById('cmTNval').textContent = m.tn.toLocaleString();
+  document.getElementById('cmFPval').textContent = m.fp.toLocaleString();
+  document.getElementById('cmFNval').textContent = m.fn.toLocaleString();
+  document.getElementById('cmTPval').textContent = m.tp.toLocaleString();
+
+  document.getElementById('cmAccuracy').textContent = m.acc.toFixed(3);
+  document.getElementById('cmBalAcc').textContent = m.bal.toFixed(3);
+  document.getElementById('cmPrecision').textContent = m.prec.toFixed(3);
+  document.getElementById('cmRecall').textContent = m.rec.toFixed(3);
+  document.getElementById('cmF1').textContent = m.f1.toFixed(3);
+  document.getElementById('cmPRAUC').textContent = m.prauc.toFixed(3);
+  document.getElementById('cmROCAUC').textContent = m.rocauc.toFixed(3);
+
+  // Scale cell background intensity based on values
+  const total = m.tn + m.fp + m.fn + m.tp;
+  const tnPct = m.tn / total;
+  const fpPct = m.fp / total;
+  const fnPct = m.fn / total;
+  const tpPct = m.tp / total;
+
+  // Adjust cell colors based on relative sizes
+  const tnEl = document.getElementById('cmTN');
+  const fpEl = document.getElementById('cmFP');
+  const fnEl = document.getElementById('cmFN');
+  const tpEl = document.getElementById('cmTP');
+
+  // Bigger cells get more intense color
+  tnEl.style.opacity = 0.5 + tnPct * 0.8;
+  fpEl.style.opacity = 0.5 + fpPct * 3;
+  fnEl.style.opacity = 0.5 + fnPct * 3;
+  tpEl.style.opacity = 0.5 + tpPct * 3;
+}
+
+// Initial state
+updateConfusionMatrix();
+
+
+// ============================================================
+//  SIDEBAR ACTIVE STATE ON SCROLL
+// ============================================================
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.sidebar nav a');
+
+function onScroll() {
+  let current = '';
+  sections.forEach(section => {
+    const rect = section.getBoundingClientRect();
+    if (rect.top <= 120) {
+      current = section.getAttribute('id');
+    }
+  });
+  navLinks.forEach(link => {
+    link.classList.remove('active');
+    if (link.getAttribute('href') === '#' + current) {
+      link.classList.add('active');
+    }
+  });
+}
+window.addEventListener('scroll', onScroll, { passive: true });
+
+
+// ============================================================
+//  MOBILE SIDEBAR TOGGLE
+// ============================================================
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('mobileOverlay').classList.toggle('open');
+}
+
+// Close sidebar when nav link clicked on mobile
+navLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      toggleSidebar();
+    }
+  });
+});
+</script>
+
+</body>
+</html>
