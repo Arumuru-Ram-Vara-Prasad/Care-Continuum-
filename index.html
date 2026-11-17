@@ -1342,11 +1342,11 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num" style="background:var(--accent); font-size:0.85rem; font-weight:700;">RP</span>
         <h2>Readmission Risk Predictor</h2>
-        <span class="pts" style="background:#e8f4fd; color:var(--primary); padding:3px 10px; border-radius:12px; font-weight:700;">Live Interactive Inference</span>
+        <span class="pts" style="background:#e8f4fd; color:var(--primary); padding:3px 10px; border-radius:12px; font-weight:700;">Illustrative Score Simulator</span>
       </div>
 
-      <div class="highlight-box">
-        <strong>Decoded Feature Inference Engine:</strong> From our model's feature importance analysis, 8 core clinical features account for over 50% of the total predictive signal. All numeric codes (e.g., discharge disposition IDs) have been <strong>fully decoded into plain clinical language</strong>. Select any combination of characteristics across their domains below to compute the real-time predicted probability of 30-day hospital readmission.
+      <div class="highlight-box warning">
+        <strong>Important — educational illustration, not deployed model inference:</strong> This browser-based simulator uses fixed logistic-style coefficients embedded in this page. It does <strong>not</strong> load or call the saved CatBoost model. Its scores and example follow-up messages are illustrative only; they are not validated clinical predictions or medical advice. The model-comparison and threshold-explorer results elsewhere on this page come from the saved validation experiments.
       </div>
 
       <!-- Quick Preset Profiles -->
