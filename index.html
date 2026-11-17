@@ -3031,36 +3031,55 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
     <section class="section" id="individual">
       <div class="section-header">
         <span class="section-num">8</span>
-        <h2>Individual Understanding &amp; Defense</h2>
+        <h2>Individual Understanding &amp; Contributions</h2>
         <span class="pts">5 pts</span>
       </div>
 
-      <div class="card">
-        <div class="card-title">Individual Contribution &amp; Technical Reflection</div>
-        <p style="margin-bottom:1rem; font-size:0.9rem; color:var(--gray-700);">
-          The project involved two complementary strands: an independent compact-model exploration and the shared Care Continuum pipeline and website documented in this repository. The compact 10-feature model described below is a separate experiment; it is not the 189-feature CatBoost model whose validation results appear in Sections 4–6.
-        </p>
+      <p style="font-size:0.92rem; color:var(--gray-700); margin-bottom:1.25rem;">
+        Care Continuum was developed as a two-member project. The work was divided by primary responsibility: one member concentrated on model experimentation and evaluation, while the other concentrated on preparing the data and building the interactive website. Important project decisions, interpretation of the results, and final review were collaborative.
+      </p>
 
+      <div class="card">
         <div style="border-left:4px solid var(--accent); padding:1rem 1.15rem; background:#f0f7fc; border-radius:0 8px 8px 0; margin-bottom:1.25rem;">
-          <h3 style="color:var(--primary); font-size:1.08rem; margin-bottom:0.45rem;">1. Prattipati Nagayaswanth — Compact-model experimentation</h3>
-          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Individual work:</strong> Developed and compared a separate compact CatBoost pipeline using 42-, 22- and 10-feature representations. Explored baseline and alternative classifiers, examined the effect of reducing medication inputs, carried out eight hyperparameter configurations for the 10-feature model, and documented its feature importance and held-out test evaluation.</p>
-          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Key technical reasoning:</strong> Compared a larger feature set with more compact alternatives to reduce the number of inputs required by a prediction interface. Used patient-grouped splitting to prevent encounters from the same patient appearing across train and test partitions. The selected compact model was evaluated on its own held-out test set, with accuracy 63.46%, readmitted-class precision 62.82%, recall 54.49% and F1 0.5836.</p>
-          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Limitation identified:</strong> The compact model's results belong to a different modelling pipeline and cohort definition from the 189-feature pipeline reported in this website. Their metrics must not be compared as if they were produced on the same split or feature representation. The compact model is also not the inference engine of the JavaScript risk simulator shown on this website.</p>
-          <p style="font-size:0.88rem; margin:0;"><strong>Improvement proposed:</strong> Integrate the compact model through an actual model-serving backend, then evaluate both pipelines on a clearly specified, identical patient-disjoint evaluation design before making direct performance comparisons.</p>
-          <p style="font-size:0.78rem; margin-top:0.75rem; color:var(--gray-600);"><strong>Evidence:</strong> Separate CareContinuum-AI model artefacts, notebooks, model results and development record.</p>
+          <h3 style="color:var(--primary); font-size:1.08rem; margin-bottom:0.55rem;">1. Prattipati Nagayaswanth — Model Development &amp; Evaluation</h3>
+          <p style="font-size:0.9rem; margin-bottom:0.65rem;">
+            <strong>Primary contribution:</strong> Focused on the machine-learning experiments and the comparison of model behaviour. This included establishing the unweighted Logistic Regression baseline, examining class-weighted Logistic Regression, evaluating Random Forest, comparing the feature-engineering experiment, and analysing the CatBoost and LightGBM results.
+          </p>
+          <p style="font-size:0.9rem; margin-bottom:0.65rem;">
+            <strong>Key decisions and reasoning:</strong> Investigated why accuracy alone was misleading for a dataset in which early readmissions represent only about 11.36% of encounters. Compared precision, recall, F1, PR-AUC and ROC-AUC, and treated PR-AUC as the main model-comparison metric. Examined how class weighting changed the minority-class recall, and how changing the classification threshold affected false alarms and missed readmissions. Also considered the results of the feature-engineering ablation instead of assuming that adding features would improve performance.
+          </p>
+          <p style="font-size:0.9rem; margin-bottom:0.65rem;">
+            <strong>Evidence in this project:</strong> The model training and evaluation material under <code>Training/</code> and <code>models/</code>, the consolidated comparison in <code>Reports/care_continuum_validation_model_comparison.csv</code>, the CatBoost and LightGBM validation outputs, and the model-comparison and threshold-exploration sections of this website.
+          </p>
+          <p style="font-size:0.9rem; margin-bottom:0.65rem;">
+            <strong>What I learned:</strong> A model that reports high accuracy can still miss most of the positive cases. In this project, the unweighted Logistic Regression and Random Forest models had very low recall at threshold 0.5. Class weighting and threshold adjustment improved the number of readmissions detected, but increased the number of false-positive alerts. Model choice therefore depends on the intended use and the relative cost of missed cases and false alarms.
+          </p>
+          <p style="font-size:0.9rem; margin:0;">
+            <strong>Limitation identified and improvement:</strong> CatBoost achieved the best validation PR-AUC among the reported models (0.2128), but its validation precision at threshold 0.5 was only 0.1836, so many flagged encounters were false positives. The held-out test set has not yet been evaluated. A next step is to lock the model and threshold using training/validation data, evaluate once on the untouched test set, and report the resulting error trade-off without tuning on that test set.
+          </p>
         </div>
 
         <div style="border-left:4px solid var(--success); padding:1rem 1.15rem; background:#effaf4; border-radius:0 8px 8px 0; margin-bottom:1.25rem;">
-          <h3 style="color:var(--primary); font-size:1.08rem; margin-bottom:0.45rem;">2. Arumuru Ram Vara Prasad — Shared pipeline, evaluation and website integration</h3>
-          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Work documented in the shared repository:</strong> The repository contains the data-cleaning audit, exploratory analysis, diagnosis and specialty grouping scripts, medication-feature analysis, patient-grouped preprocessing and split generation, training scripts for Logistic Regression, class-weighted Logistic Regression, Random Forest, CatBoost and LightGBM, saved model artefacts, validation outputs, reports, and the HTML/CSS/JavaScript website.</p>
-          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Key technical reasoning reflected in the implementation:</strong> Defined the target as early readmission within 30 days, retained multiple encounters per patient while grouping by patient identifier for the data splits, fitted transformations within training folds, used PR-AUC alongside threshold-dependent metrics because the positive class is uncommon, and recorded the feature-engineering ablation as a negative result rather than presenting it as an improvement. The website presents the reasoning, validation results, error counts and threshold trade-offs.</p>
-          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Limitation identified:</strong> The held-out test partition remains unscored, so the reported results are validation and grouped cross-validation results only. The current browser-based risk estimator uses manually specified log-odds coefficients rather than loading the saved CatBoost model; it should therefore be understood as an illustrative simulator, not deployment of the trained model.</p>
-          <p style="font-size:0.88rem; margin:0;"><strong>Improvement proposed:</strong> Replace or relabel the illustrative risk estimator, connect a real model-serving endpoint if live model inference is intended, and complete one final evaluation on the untouched test set after model and threshold choices are locked.</p>
-          <p style="font-size:0.78rem; margin-top:0.75rem; color:var(--gray-600);"><strong>Evidence:</strong> Shared repository files under <code>data_cleaning/</code>, <code>data_analysis/</code>, <code>Preprocessing/</code>, <code>Training/</code>, <code>models/</code>, <code>Reports/</code> and the web application. Git history records the repository commits under this GitHub account; commit attribution alone is not proof of the division of every task.</p>
+          <h3 style="color:var(--primary); font-size:1.08rem; margin-bottom:0.55rem;">2. Arumuru Ram Vara Prasad — Data Preparation, Preprocessing &amp; Website Development</h3>
+          <p style="font-size:0.9rem; margin-bottom:0.65rem;">
+            <strong>Primary contribution:</strong> Focused on understanding and preparing the hospital encounter dataset, documenting preprocessing decisions, and developing the website that communicates the complete workflow. This included the data-cleaning and exploratory-analysis material, diagnosis and medical-specialty grouping, medication-feature analysis, preprocessing audits, and the interactive HTML/CSS/JavaScript interface.
+          </p>
+          <p style="font-size:0.9rem; margin-bottom:0.65rem;">
+            <strong>Key decisions and reasoning:</strong> Preserved the encounter as the unit of analysis while recognising that one patient can contribute multiple encounters. Used <code>patient_nbr</code> only to create patient-disjoint train, validation and test partitions, not as a predictor. Grouped diagnosis codes into broader clinical categories, consolidated medical specialties, and examined medication-feature variation before removing rare or near-constant columns. The verification report used Fisher's exact test with Benjamini–Hochberg adjustment and explicitly noted that a non-significant result is not proof that a feature has no predictive value. The website presents the research question, data and preprocessing pipeline, model results, error analysis, limitations and interactive threshold exploration.
+          </p>
+          <p style="font-size:0.9rem; margin-bottom:0.65rem;">
+            <strong>Evidence in this project:</strong> The cleaning and EDA files under <code>data_cleaning/</code> and <code>data_analysis/</code>; the diagnosis, specialty, drug-analysis and model-data preparation scripts under <code>Preprocessing/</code>; the audit and comparison files under <code>Reports/</code>; and the website files <code>index.html</code>, <code>styles.css</code> and <code>app.js</code>.
+          </p>
+          <p style="font-size:0.9rem; margin-bottom:0.65rem;">
+            <strong>What I learned:</strong> Data preparation is not just removing missing values. The meaning of missing clinical measurements, repeated encounters from the same patient, rare categories and the point in time when a feature becomes available all affect whether a model evaluation is valid. A clear website also needs to explain why each step was taken, rather than only displaying the final score.
+          </p>
+          <p style="font-size:0.9rem; margin:0;">
+            <strong>Limitation identified and improvement:</strong> The current interactive patient-risk estimator in the browser uses fixed logistic-style coefficients in JavaScript; it does not load the saved CatBoost artefact for live inference. It should therefore be presented as an illustrative coefficient-based simulator rather than as the deployed CatBoost model. A next step is to connect the interface to a verified model-serving endpoint, or clearly label the estimator as illustrative, and retain the untouched test set for final evaluation.
+          </p>
         </div>
 
-        <div class="highlight-box warning" style="margin-bottom:0;">
-          <strong>Assessment note:</strong> These statements distinguish the two model pipelines and identify evidence available in the submitted materials. Individual explanations should be checked by each contributor for accuracy before submission. The validation scores on this website must not be mixed with the compact-model test scores stated above.
+        <div class="highlight-box" style="margin-bottom:0;">
+          <strong>Shared responsibilities:</strong> Both members contributed to the overall project direction, understanding the 30-day readmission task, interpreting the model comparison, reviewing the limitations, and bringing the technical work together into one submission. The roles above describe the main areas of responsibility rather than suggesting that either member worked in isolation.
         </div>
       </div>
     </section>
