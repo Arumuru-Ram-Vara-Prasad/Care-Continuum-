@@ -402,7 +402,7 @@ Care Continum/
 
 ### Option A: Instant Access (Zero Installation)
 Simply visit the live, deployed web application:  
-👉 **[https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/)**
+**[https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/)**
 
 ### Option B: Local Developer Reproduction & Training
 
