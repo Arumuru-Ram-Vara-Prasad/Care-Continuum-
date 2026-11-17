@@ -300,6 +300,10 @@ The project includes an interactive web dashboard hosted live at [https://arumur
    - Real-time confusion matrix workbench allowing evaluators to switch between all 5 model architectures and adjust the classification threshold slider from `0.05` to `0.90`.
    - Instant live updates of TP, FP, FN, TN, Sensitivity (Recall), Precision, Specificity, F1-Score, and Balanced Accuracy on the 15,049 validation cohort.
    - Clinical scenario presets: *High Sensitivity (0.30)*, *Default (0.50)*, and *High Precision (0.65)*.
+5. **Interactive Benchmark Curves: PR vs. ROC Discrimination (Section 6)**:
+   - Dynamic toggle between the Precision-Recall curve (primary imbalanced metric) and the ROC curve across all 5 candidate models on identical validation data, with real-time clinical significance callouts.
+6. **Clinical Error Analysis & Failure Archetypes (Section 6)**:
+   - Deep clinical deconstruction of False Negatives (832 missed readmissions) via the *"Low-Utilization Surprise"* archetype and False Positives (3,904 false alarms) via the *"Fragile but Supported Patient"* / Intervention Paradox, paired with a multi-dimensional clinical profile audit table.
 
 ---
 

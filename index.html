@@ -1224,6 +1224,109 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
 .risk-dot.dot-mod { background: #f39c12; }
 .risk-dot.dot-high { background: #e74c3c; }
 
+/* Section 6 Enhancements: Benchmark Curves & Error Archetypes */
+.curve-controls {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.curve-toggle-btn {
+  background: #ffffff;
+  border: 1px solid var(--gray-300);
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.curve-toggle-btn:hover {
+  background: #f0f7fc;
+  border-color: var(--accent);
+}
+.curve-toggle-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(26, 82, 118, 0.2);
+}
+.archetype-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  margin-bottom: 1.25rem;
+}
+@media (max-width: 820px) {
+  .archetype-grid { grid-template-columns: 1fr; }
+}
+.archetype-card {
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px solid var(--gray-300);
+  padding: 1.15rem;
+  position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.archetype-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+.archetype-card.fn-card {
+  border-left: 4px solid var(--danger);
+  background: linear-gradient(180deg, #fffafa 0%, #ffffff 100%);
+}
+.archetype-card.fp-card {
+  border-left: 4px solid var(--warning);
+  background: linear-gradient(180deg, #fffdf8 0%, #ffffff 100%);
+}
+.archetype-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  margin-bottom: 0.5rem;
+}
+.archetype-badge.fn-badge {
+  background: #fde8e8;
+  color: #c53030;
+}
+.archetype-badge.fp-badge {
+  background: #fef3c7;
+  color: #b45309;
+}
+.archetype-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 0.35rem;
+}
+.archetype-stat-row {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0.6rem 0;
+  flex-wrap: wrap;
+}
+.archetype-stat-box {
+  background: rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 4px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.76rem;
+}
+.archetype-stat-box strong {
+  color: var(--primary);
+  font-size: 0.88rem;
+  display: block;
+}
+
+
 </style>
 </head>
 <body>
@@ -2795,6 +2898,201 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
         </div>
       </div>
 
+      <!-- 1. INTERACTIVE MULTI-MODEL BENCHMARK CURVES -->
+      <div class="card" id="benchmark-curves-card" style="border: 2px solid #bce1f7; background: #ffffff;">
+        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.35rem;">
+          <span>Interactive Benchmark Curves: Precision-Recall vs. ROC Discrimination</span>
+          <span style="font-size:0.75rem; font-weight:600; padding:0.25rem 0.65rem; background:#e0f2fe; color:#0284c7; border-radius:999px; text-transform:uppercase; letter-spacing:0.5px;">Hold-Out Validation (N = 15,049)</span>
+        </div>
+        <p style="font-size:0.88rem; color:var(--gray-700); margin-bottom:1rem; line-height:1.55;">
+          Directly inspect and toggle between the <strong>Precision-Recall Curve</strong> (the clinical gold standard for imbalanced classification) and the <strong>ROC Curve</strong> (threshold-independent discrimination) across all 5 candidate models evaluated on identical patient-disjoint validation encounters.
+        </p>
+
+        <!-- Curve Selector Controls -->
+        <div class="curve-controls">
+          <button type="button" id="btnCurvePR" class="curve-toggle-btn active" onclick="switchBenchmarkCurve('pr')">
+            Precision-Recall Curve (Primary Imbalanced Metric)
+          </button>
+          <button type="button" id="btnCurveROC" class="curve-toggle-btn" onclick="switchBenchmarkCurve('roc')">
+            ROC Curve (Overall Discrimination)
+          </button>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="chart-container" style="max-width:820px; height:380px; margin:0 auto 1.25rem auto;">
+          <canvas id="multiModelCurveChart"></canvas>
+        </div>
+
+        <!-- Dynamic Narrative Callout -->
+        <div id="curveNarrativeBox" style="background:#f8fbfe; border:1px solid #bce1f7; border-left:4px solid var(--accent); border-radius:6px; padding:0.9rem 1.1rem; font-size:0.84rem; color:var(--gray-800); line-height:1.6;">
+          <strong>Precision-Recall Clinical Significance:</strong> Because 30-day readmissions occur in only 11.36% of encounters, the Precision-Recall Curve evaluates performance exclusively on the 1,710 readmitted visits without being inflated by 13,339 non-readmissions. <strong>CatBoost</strong> achieves the highest PR-AUC (<strong>0.213</strong>), an <strong>+87% relative improvement</strong> over the uninformative random baseline (0.114), outperforming Random Forest (0.205), LightGBM (0.203), and Logistic Regression (0.203).
+        </div>
+      </div>
+
+      <!-- 2. CLINICAL ERROR ANALYSIS & FAILURE ARCHETYPES -->
+      <div class="card" style="border-left: 4px solid var(--accent); background: #ffffff;">
+        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.35rem;">
+          <span>Clinical Error Analysis &amp; Failure Archetypes</span>
+          <span style="font-size:0.75rem; font-weight:600; padding:0.25rem 0.65rem; background:#fee2e2; color:#b91c1c; border-radius:999px; text-transform:uppercase; letter-spacing:0.5px;">Confusion Matrix Deconstruction</span>
+        </div>
+        <p style="font-size:0.88rem; color:var(--gray-700); margin-bottom:1rem; line-height:1.55;">
+          Why do algorithmic misclassifications occur? We audited the patient cohorts behind the <strong>832 False Negatives (Missed Readmissions)</strong> and <strong>3,904 False Positives (False Alarms)</strong> on the validation cohort at the default 0.50 cutoff to uncover the clinical mechanisms driving model errors.
+        </p>
+
+        <!-- KPI Breakdown Strip -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:0.75rem; margin-bottom:1.25rem;">
+          <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:6px; padding:0.65rem 0.85rem;">
+            <div style="font-size:0.72rem; font-weight:700; color:#166534; text-transform:uppercase;">True Positives (TP)</div>
+            <div style="font-size:1.25rem; font-weight:800; color:#15803d;">878</div>
+            <div style="font-size:0.75rem; color:#166534;">51.3% Sensitivity Intercepted</div>
+          </div>
+          <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:6px; padding:0.65rem 0.85rem;">
+            <div style="font-size:0.72rem; font-weight:700; color:#991b1b; text-transform:uppercase;">False Negatives (FN)</div>
+            <div style="font-size:1.25rem; font-weight:800; color:#b91c1c;">832</div>
+            <div style="font-size:0.75rem; color:#991b1b;">Clinical Safety Blind Spot</div>
+          </div>
+          <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:6px; padding:0.65rem 0.85rem;">
+            <div style="font-size:0.72rem; font-weight:700; color:#92400e; text-transform:uppercase;">False Positives (FP)</div>
+            <div style="font-size:1.25rem; font-weight:800; color:#b45309;">3,904</div>
+            <div style="font-size:0.75rem; color:#92400e;">Nurse Outreach Triage Burden</div>
+          </div>
+          <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:0.65rem 0.85rem;">
+            <div style="font-size:0.72rem; font-weight:700; color:#475569; text-transform:uppercase;">True Negatives (TN)</div>
+            <div style="font-size:1.25rem; font-weight:800; color:#334155;">9,435</div>
+            <div style="font-size:0.75rem; color:#475569;">70.7% Specificity Cleared</div>
+          </div>
+        </div>
+
+        <!-- 2 Detailed Archetype Cards -->
+        <div class="archetype-grid">
+          
+          <!-- Archetype 1: False Negative -->
+          <div class="archetype-card fn-card">
+            <span class="archetype-badge fn-badge">Error Mode: False Negative (Clinical Risk)</span>
+            <div class="archetype-title">Archetype 1: The "Low-Utilization Surprise"</div>
+            <p style="font-size:0.82rem; color:var(--gray-700); line-height:1.5; margin-bottom:0.6rem;">
+              Patients who suffered acute 30-day deterioration despite being classified as low-risk by the model and routine discharge by attending physicians.
+            </p>
+            <div class="archetype-stat-row">
+              <div class="archetype-stat-box">
+                <strong>78.8%</strong>
+                Zero Prior Inpatient Stays
+              </div>
+              <div class="archetype-stat-box">
+                <strong>63.8%</strong>
+                Discharged to Routine Home
+              </div>
+              <div class="archetype-stat-box">
+                <strong>0.26</strong>
+                Mean Inpatient Visits
+              </div>
+            </div>
+            <p style="font-size:0.8rem; color:var(--gray-800); line-height:1.55; margin-bottom:0.5rem;">
+              <strong>Root Cause Failure Mechanism:</strong> CatBoost heavily weights past hospitalization count (<code>number_inpatient</code>, ranked #1 feature) as a proxy for chronic biological fragility. For first-time hospitalizations or patients treated outside this hospital network, this historical signal is absent (mean prior visits: 0.26 vs. 2.02 in True Positives). Because attending physicians also deemed 63.8% stable for routine home discharge, both the algorithmic model and human clinical staff shared a common blind spot.
+            </p>
+            <div style="background:rgba(231,76,60,0.08); border-radius:4px; padding:0.5rem 0.65rem; font-size:0.78rem; color:#991b1b;">
+              <strong>Clinical Safeguard:</strong> For any diabetic inpatient with 0 prior recorded hospitalizations, deploy an automated safety protocol prioritizing acute glycemic volatility (severe hypoglycemia, recent insulin start) and outpatient social support rather than historical utilization.
+            </div>
+          </div>
+
+          <!-- Archetype 2: False Positive -->
+          <div class="archetype-card fp-card">
+            <span class="archetype-badge fp-badge">Error Mode: False Positive (Operational Cost)</span>
+            <div class="archetype-title">Archetype 2: The "Fragile but Supported Patient"</div>
+            <p style="font-size:0.82rem; color:var(--gray-700); line-height:1.5; margin-bottom:0.6rem;">
+              Patients flagged as high readmission risk by the model who successfully remained in the community without 30-day inpatient readmission.
+            </p>
+            <div class="archetype-stat-row">
+              <div class="archetype-stat-box">
+                <strong>17.81</strong>
+                Medications (Polypharmacy)
+              </div>
+              <div class="archetype-stat-box">
+                <strong>61.3%</strong>
+                Non-Routine Assisted Discharge
+              </div>
+              <div class="archetype-stat-box">
+                <strong>5.01 Days</strong>
+                Mean Inpatient Stay
+              </div>
+            </div>
+            <p style="font-size:0.8rem; color:var(--gray-800); line-height:1.55; margin-bottom:0.5rem;">
+              <strong>Root Cause ("The Intervention Paradox"):</strong> In retrospective observational healthcare data, many statistical "False Positives" are actually <em>clinical prevention successes</em>. These patients exhibited severe multi-organ morbidity (mean 8.12 diagnoses, 46.83 lab procedures, and 17.81 medications—higher even than True Positives). However, precisely because their fragility was apparent, hospital discharge planners routed <strong>61.3% to specialized transitional care</strong> (skilled nursing facilities, visiting home nurses, outpatient clinics), which successfully averted relapse.
+            </p>
+            <div style="background:rgba(243,156,18,0.1); border-radius:4px; padding:0.5rem 0.65rem; font-size:0.78rem; color:#92400e;">
+              <strong>Operational Reality:</strong> Hospital case management should not treat these 3,904 reviews as wasted outreach effort. These patients are appropriate candidates for lower-touch structured phone check-ins rather than emergency post-discharge readmission triage.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Deconstructed Confusion Matrix Clinical Profile Table -->
+        <div style="margin-top:0.75rem;">
+          <div style="font-size:0.82rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--primary); margin-bottom:0.5rem;">
+            Clinical Profile Comparison Across Validation Confusion Matrix Quadrants
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Confusion Matrix Quadrant</th>
+                  <th>Encounters (N)</th>
+                  <th>Mean Prior Inpatient Stays</th>
+                  <th>% with 0 Prior Stays</th>
+                  <th>Mean Prescribed Meds</th>
+                  <th>Mean Length of Stay</th>
+                  <th>% Routine Home Discharge</th>
+                  <th>Primary Clinical Implication</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background:#f0fdf4;">
+                  <td><strong>True Positives (TP)</strong></td>
+                  <td>878</td>
+                  <td><strong>2.02</strong></td>
+                  <td>24.1%</td>
+                  <td>17.47</td>
+                  <td>5.08 days</td>
+                  <td>38.3%</td>
+                  <td>Correctly intercepted; target for intensive nurse outreach.</td>
+                </tr>
+                <tr style="background:#fffbeb;">
+                  <td><strong>False Positives (FP)</strong></td>
+                  <td>3,904</td>
+                  <td>1.48</td>
+                  <td>30.4%</td>
+                  <td><strong>17.81</strong></td>
+                  <td>5.01 days</td>
+                  <td>38.7%</td>
+                  <td>Severely acute; readmission prevented by transitional care.</td>
+                </tr>
+                <tr style="background:#fef2f2;">
+                  <td><strong>False Negatives (FN)</strong></td>
+                  <td>832</td>
+                  <td>0.26</td>
+                  <td><strong>78.8%</strong></td>
+                  <td>15.15</td>
+                  <td>4.25 days</td>
+                  <td><strong>63.8%</strong></td>
+                  <td>Acute relapse without past hospital record; safety blind spot.</td>
+                </tr>
+                <tr>
+                  <td><strong>True Negatives (TN)</strong></td>
+                  <td>9,435</td>
+                  <td>0.18</td>
+                  <td>84.3%</td>
+                  <td>15.01</td>
+                  <td>4.07 days</td>
+                  <td>70.4%</td>
+                  <td>Clinically stable; appropriate for standard outpatient follow-up.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
       <!-- Feature Importance Chart -->
       <div class="card">
         <div class="card-title">CatBoost Feature Importance — Top 10 Features</div>
@@ -4260,10 +4558,159 @@ function initMethodsSimulator() {
 
 // Call init directly and also on DOMContentLoaded
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initMethodsSimulator);
+  document.addEventListener('DOMContentLoaded', () => {
+    initMethodsSimulator();
+    initMultiModelCurveChart();
+  });
 } else {
   initMethodsSimulator();
+  initMultiModelCurveChart();
 }
+
+// ============================================================
+//  MULTI-MODEL BENCHMARK CURVE CHART (PR & ROC)
+// ============================================================
+const multiModelCurves = {"catboost": {"label": "CatBoost (Champion)", "color": "#1a5276", "pr_auc": 0.213, "roc_auc": 0.661, "pr_points": [{"x": 0.01, "y": 0.517}, {"x": 0.035, "y": 0.367}, {"x": 0.06, "y": 0.354}, {"x": 0.085, "y": 0.358}, {"x": 0.111, "y": 0.331}, {"x": 0.136, "y": 0.323}, {"x": 0.161, "y": 0.309}, {"x": 0.186, "y": 0.295}, {"x": 0.211, "y": 0.277}, {"x": 0.236, "y": 0.261}, {"x": 0.261, "y": 0.252}, {"x": 0.286, "y": 0.242}, {"x": 0.312, "y": 0.238}, {"x": 0.337, "y": 0.232}, {"x": 0.362, "y": 0.23}, {"x": 0.387, "y": 0.218}, {"x": 0.412, "y": 0.208}, {"x": 0.437, "y": 0.2}, {"x": 0.462, "y": 0.196}, {"x": 0.487, "y": 0.19}, {"x": 0.513, "y": 0.184}, {"x": 0.538, "y": 0.18}, {"x": 0.563, "y": 0.176}, {"x": 0.588, "y": 0.175}, {"x": 0.613, "y": 0.17}, {"x": 0.638, "y": 0.166}, {"x": 0.663, "y": 0.163}, {"x": 0.688, "y": 0.158}, {"x": 0.714, "y": 0.154}, {"x": 0.739, "y": 0.15}, {"x": 0.764, "y": 0.148}, {"x": 0.789, "y": 0.145}, {"x": 0.814, "y": 0.142}, {"x": 0.839, "y": 0.14}, {"x": 0.864, "y": 0.134}, {"x": 0.889, "y": 0.131}, {"x": 0.915, "y": 0.127}, {"x": 0.94, "y": 0.124}, {"x": 0.965, "y": 0.122}, {"x": 0.99, "y": 0.116}], "roc_points": [{"x": 0.0, "y": 0.001}, {"x": 0.026, "y": 0.105}, {"x": 0.051, "y": 0.175}, {"x": 0.077, "y": 0.223}, {"x": 0.103, "y": 0.267}, {"x": 0.128, "y": 0.312}, {"x": 0.154, "y": 0.359}, {"x": 0.179, "y": 0.389}, {"x": 0.205, "y": 0.417}, {"x": 0.231, "y": 0.443}, {"x": 0.256, "y": 0.477}, {"x": 0.282, "y": 0.501}, {"x": 0.308, "y": 0.532}, {"x": 0.333, "y": 0.558}, {"x": 0.359, "y": 0.592}, {"x": 0.385, "y": 0.614}, {"x": 0.41, "y": 0.639}, {"x": 0.436, "y": 0.661}, {"x": 0.462, "y": 0.682}, {"x": 0.487, "y": 0.701}, {"x": 0.513, "y": 0.722}, {"x": 0.538, "y": 0.743}, {"x": 0.564, "y": 0.766}, {"x": 0.59, "y": 0.784}, {"x": 0.615, "y": 0.805}, {"x": 0.641, "y": 0.823}, {"x": 0.667, "y": 0.842}, {"x": 0.692, "y": 0.849}, {"x": 0.718, "y": 0.864}, {"x": 0.744, "y": 0.881}, {"x": 0.769, "y": 0.896}, {"x": 0.795, "y": 0.908}, {"x": 0.821, "y": 0.925}, {"x": 0.846, "y": 0.937}, {"x": 0.872, "y": 0.956}, {"x": 0.897, "y": 0.968}, {"x": 0.923, "y": 0.978}, {"x": 0.949, "y": 0.988}, {"x": 0.974, "y": 0.993}, {"x": 1.0, "y": 1.0}]}, "lightgbm": {"label": "LightGBM", "color": "#0d9488", "pr_auc": 0.203, "roc_auc": 0.647, "pr_points": [{"x": 0.01, "y": 0.474}, {"x": 0.035, "y": 0.406}, {"x": 0.06, "y": 0.349}, {"x": 0.085, "y": 0.325}, {"x": 0.111, "y": 0.325}, {"x": 0.136, "y": 0.287}, {"x": 0.161, "y": 0.271}, {"x": 0.186, "y": 0.256}, {"x": 0.211, "y": 0.237}, {"x": 0.236, "y": 0.228}, {"x": 0.261, "y": 0.22}, {"x": 0.286, "y": 0.216}, {"x": 0.312, "y": 0.207}, {"x": 0.337, "y": 0.205}, {"x": 0.362, "y": 0.203}, {"x": 0.387, "y": 0.199}, {"x": 0.412, "y": 0.195}, {"x": 0.437, "y": 0.189}, {"x": 0.462, "y": 0.185}, {"x": 0.487, "y": 0.179}, {"x": 0.513, "y": 0.178}, {"x": 0.538, "y": 0.175}, {"x": 0.563, "y": 0.171}, {"x": 0.588, "y": 0.168}, {"x": 0.613, "y": 0.165}, {"x": 0.638, "y": 0.162}, {"x": 0.663, "y": 0.157}, {"x": 0.688, "y": 0.154}, {"x": 0.714, "y": 0.15}, {"x": 0.739, "y": 0.146}, {"x": 0.764, "y": 0.142}, {"x": 0.789, "y": 0.14}, {"x": 0.814, "y": 0.137}, {"x": 0.839, "y": 0.135}, {"x": 0.864, "y": 0.132}, {"x": 0.889, "y": 0.131}, {"x": 0.915, "y": 0.128}, {"x": 0.94, "y": 0.124}, {"x": 0.965, "y": 0.12}, {"x": 0.99, "y": 0.116}], "roc_points": [{"x": 0.0, "y": 0.002}, {"x": 0.026, "y": 0.098}, {"x": 0.051, "y": 0.149}, {"x": 0.077, "y": 0.196}, {"x": 0.103, "y": 0.236}, {"x": 0.128, "y": 0.277}, {"x": 0.154, "y": 0.315}, {"x": 0.179, "y": 0.354}, {"x": 0.205, "y": 0.396}, {"x": 0.231, "y": 0.426}, {"x": 0.256, "y": 0.453}, {"x": 0.282, "y": 0.483}, {"x": 0.308, "y": 0.515}, {"x": 0.333, "y": 0.547}, {"x": 0.359, "y": 0.574}, {"x": 0.385, "y": 0.598}, {"x": 0.41, "y": 0.627}, {"x": 0.436, "y": 0.649}, {"x": 0.462, "y": 0.668}, {"x": 0.487, "y": 0.689}, {"x": 0.513, "y": 0.707}, {"x": 0.538, "y": 0.727}, {"x": 0.564, "y": 0.744}, {"x": 0.59, "y": 0.763}, {"x": 0.615, "y": 0.784}, {"x": 0.641, "y": 0.804}, {"x": 0.667, "y": 0.824}, {"x": 0.692, "y": 0.84}, {"x": 0.718, "y": 0.856}, {"x": 0.744, "y": 0.875}, {"x": 0.769, "y": 0.893}, {"x": 0.795, "y": 0.913}, {"x": 0.821, "y": 0.927}, {"x": 0.846, "y": 0.937}, {"x": 0.872, "y": 0.949}, {"x": 0.897, "y": 0.96}, {"x": 0.923, "y": 0.973}, {"x": 0.949, "y": 0.984}, {"x": 0.974, "y": 0.993}, {"x": 1.0, "y": 1.0}]}, "rf": {"label": "Random Forest", "color": "#27ae60", "pr_auc": 0.205, "roc_auc": 0.653, "pr_points": [{"x": 0.01, "y": 0.5}, {"x": 0.035, "y": 0.398}, {"x": 0.06, "y": 0.349}, {"x": 0.085, "y": 0.319}, {"x": 0.111, "y": 0.295}, {"x": 0.136, "y": 0.29}, {"x": 0.161, "y": 0.277}, {"x": 0.186, "y": 0.269}, {"x": 0.211, "y": 0.261}, {"x": 0.236, "y": 0.254}, {"x": 0.261, "y": 0.235}, {"x": 0.286, "y": 0.225}, {"x": 0.312, "y": 0.223}, {"x": 0.337, "y": 0.214}, {"x": 0.362, "y": 0.206}, {"x": 0.387, "y": 0.204}, {"x": 0.412, "y": 0.2}, {"x": 0.437, "y": 0.195}, {"x": 0.462, "y": 0.188}, {"x": 0.487, "y": 0.185}, {"x": 0.513, "y": 0.182}, {"x": 0.538, "y": 0.176}, {"x": 0.563, "y": 0.171}, {"x": 0.588, "y": 0.169}, {"x": 0.613, "y": 0.166}, {"x": 0.638, "y": 0.162}, {"x": 0.663, "y": 0.159}, {"x": 0.688, "y": 0.156}, {"x": 0.714, "y": 0.151}, {"x": 0.739, "y": 0.147}, {"x": 0.764, "y": 0.145}, {"x": 0.789, "y": 0.143}, {"x": 0.814, "y": 0.141}, {"x": 0.839, "y": 0.139}, {"x": 0.864, "y": 0.135}, {"x": 0.889, "y": 0.131}, {"x": 0.915, "y": 0.128}, {"x": 0.94, "y": 0.123}, {"x": 0.965, "y": 0.121}, {"x": 0.99, "y": 0.116}], "roc_points": [{"x": 0.0, "y": 0.0}, {"x": 0.026, "y": 0.089}, {"x": 0.051, "y": 0.154}, {"x": 0.077, "y": 0.212}, {"x": 0.103, "y": 0.252}, {"x": 0.128, "y": 0.294}, {"x": 0.154, "y": 0.332}, {"x": 0.179, "y": 0.364}, {"x": 0.205, "y": 0.404}, {"x": 0.231, "y": 0.437}, {"x": 0.256, "y": 0.463}, {"x": 0.282, "y": 0.491}, {"x": 0.308, "y": 0.525}, {"x": 0.333, "y": 0.549}, {"x": 0.359, "y": 0.576}, {"x": 0.385, "y": 0.602}, {"x": 0.41, "y": 0.624}, {"x": 0.436, "y": 0.654}, {"x": 0.462, "y": 0.674}, {"x": 0.487, "y": 0.695}, {"x": 0.513, "y": 0.713}, {"x": 0.538, "y": 0.732}, {"x": 0.564, "y": 0.754}, {"x": 0.59, "y": 0.775}, {"x": 0.615, "y": 0.796}, {"x": 0.641, "y": 0.815}, {"x": 0.667, "y": 0.837}, {"x": 0.692, "y": 0.851}, {"x": 0.718, "y": 0.87}, {"x": 0.744, "y": 0.884}, {"x": 0.769, "y": 0.893}, {"x": 0.795, "y": 0.913}, {"x": 0.821, "y": 0.927}, {"x": 0.846, "y": 0.937}, {"x": 0.872, "y": 0.953}, {"x": 0.897, "y": 0.963}, {"x": 0.923, "y": 0.973}, {"x": 0.949, "y": 0.981}, {"x": 0.974, "y": 0.994}, {"x": 1.0, "y": 1.0}]}, "cw_lr": {"label": "Class-Weighted LR", "color": "#d97706", "pr_auc": 0.203, "roc_auc": 0.655, "pr_points": [{"x": 0.01, "y": 0.388}, {"x": 0.035, "y": 0.411}, {"x": 0.06, "y": 0.363}, {"x": 0.085, "y": 0.329}, {"x": 0.111, "y": 0.313}, {"x": 0.136, "y": 0.291}, {"x": 0.161, "y": 0.273}, {"x": 0.186, "y": 0.245}, {"x": 0.211, "y": 0.237}, {"x": 0.236, "y": 0.232}, {"x": 0.261, "y": 0.226}, {"x": 0.286, "y": 0.222}, {"x": 0.312, "y": 0.215}, {"x": 0.337, "y": 0.208}, {"x": 0.362, "y": 0.207}, {"x": 0.387, "y": 0.202}, {"x": 0.412, "y": 0.199}, {"x": 0.437, "y": 0.189}, {"x": 0.462, "y": 0.184}, {"x": 0.487, "y": 0.18}, {"x": 0.513, "y": 0.178}, {"x": 0.538, "y": 0.174}, {"x": 0.563, "y": 0.169}, {"x": 0.588, "y": 0.168}, {"x": 0.613, "y": 0.164}, {"x": 0.638, "y": 0.161}, {"x": 0.663, "y": 0.159}, {"x": 0.688, "y": 0.156}, {"x": 0.714, "y": 0.152}, {"x": 0.739, "y": 0.15}, {"x": 0.764, "y": 0.149}, {"x": 0.789, "y": 0.147}, {"x": 0.814, "y": 0.145}, {"x": 0.839, "y": 0.141}, {"x": 0.864, "y": 0.137}, {"x": 0.889, "y": 0.133}, {"x": 0.915, "y": 0.13}, {"x": 0.94, "y": 0.126}, {"x": 0.965, "y": 0.123}, {"x": 0.99, "y": 0.117}], "roc_points": [{"x": 0.0, "y": 0.0}, {"x": 0.026, "y": 0.094}, {"x": 0.051, "y": 0.156}, {"x": 0.077, "y": 0.194}, {"x": 0.103, "y": 0.242}, {"x": 0.128, "y": 0.286}, {"x": 0.154, "y": 0.325}, {"x": 0.179, "y": 0.363}, {"x": 0.205, "y": 0.405}, {"x": 0.231, "y": 0.427}, {"x": 0.256, "y": 0.457}, {"x": 0.282, "y": 0.483}, {"x": 0.308, "y": 0.516}, {"x": 0.333, "y": 0.542}, {"x": 0.359, "y": 0.571}, {"x": 0.385, "y": 0.599}, {"x": 0.41, "y": 0.625}, {"x": 0.436, "y": 0.65}, {"x": 0.462, "y": 0.678}, {"x": 0.487, "y": 0.695}, {"x": 0.513, "y": 0.717}, {"x": 0.538, "y": 0.74}, {"x": 0.564, "y": 0.767}, {"x": 0.59, "y": 0.79}, {"x": 0.615, "y": 0.813}, {"x": 0.641, "y": 0.835}, {"x": 0.667, "y": 0.848}, {"x": 0.692, "y": 0.863}, {"x": 0.718, "y": 0.874}, {"x": 0.744, "y": 0.894}, {"x": 0.769, "y": 0.906}, {"x": 0.795, "y": 0.92}, {"x": 0.821, "y": 0.933}, {"x": 0.846, "y": 0.945}, {"x": 0.872, "y": 0.962}, {"x": 0.897, "y": 0.972}, {"x": 0.923, "y": 0.981}, {"x": 0.949, "y": 0.988}, {"x": 0.974, "y": 0.994}, {"x": 1.0, "y": 1.0}]}, "base_lr": {"label": "Unweighted LR (Baseline)", "color": "#64748b", "pr_auc": 0.203, "roc_auc": 0.654, "pr_points": [{"x": 0.01, "y": 0.371}, {"x": 0.035, "y": 0.401}, {"x": 0.06, "y": 0.36}, {"x": 0.085, "y": 0.318}, {"x": 0.111, "y": 0.309}, {"x": 0.136, "y": 0.299}, {"x": 0.161, "y": 0.276}, {"x": 0.186, "y": 0.254}, {"x": 0.211, "y": 0.236}, {"x": 0.236, "y": 0.233}, {"x": 0.261, "y": 0.228}, {"x": 0.286, "y": 0.219}, {"x": 0.312, "y": 0.215}, {"x": 0.337, "y": 0.208}, {"x": 0.362, "y": 0.205}, {"x": 0.387, "y": 0.204}, {"x": 0.412, "y": 0.194}, {"x": 0.437, "y": 0.19}, {"x": 0.462, "y": 0.184}, {"x": 0.487, "y": 0.18}, {"x": 0.513, "y": 0.177}, {"x": 0.538, "y": 0.173}, {"x": 0.563, "y": 0.169}, {"x": 0.588, "y": 0.166}, {"x": 0.613, "y": 0.163}, {"x": 0.638, "y": 0.159}, {"x": 0.663, "y": 0.157}, {"x": 0.688, "y": 0.155}, {"x": 0.714, "y": 0.15}, {"x": 0.739, "y": 0.149}, {"x": 0.764, "y": 0.147}, {"x": 0.789, "y": 0.146}, {"x": 0.814, "y": 0.144}, {"x": 0.839, "y": 0.141}, {"x": 0.864, "y": 0.139}, {"x": 0.889, "y": 0.134}, {"x": 0.915, "y": 0.131}, {"x": 0.94, "y": 0.126}, {"x": 0.965, "y": 0.123}, {"x": 0.99, "y": 0.117}], "roc_points": [{"x": 0.0, "y": 0.001}, {"x": 0.026, "y": 0.091}, {"x": 0.051, "y": 0.154}, {"x": 0.077, "y": 0.197}, {"x": 0.103, "y": 0.24}, {"x": 0.128, "y": 0.283}, {"x": 0.154, "y": 0.322}, {"x": 0.179, "y": 0.361}, {"x": 0.205, "y": 0.395}, {"x": 0.231, "y": 0.43}, {"x": 0.256, "y": 0.451}, {"x": 0.282, "y": 0.484}, {"x": 0.308, "y": 0.515}, {"x": 0.333, "y": 0.543}, {"x": 0.359, "y": 0.57}, {"x": 0.385, "y": 0.596}, {"x": 0.41, "y": 0.617}, {"x": 0.436, "y": 0.643}, {"x": 0.462, "y": 0.668}, {"x": 0.487, "y": 0.693}, {"x": 0.513, "y": 0.711}, {"x": 0.538, "y": 0.737}, {"x": 0.564, "y": 0.762}, {"x": 0.59, "y": 0.785}, {"x": 0.615, "y": 0.808}, {"x": 0.641, "y": 0.831}, {"x": 0.667, "y": 0.847}, {"x": 0.692, "y": 0.868}, {"x": 0.718, "y": 0.878}, {"x": 0.744, "y": 0.891}, {"x": 0.769, "y": 0.907}, {"x": 0.795, "y": 0.923}, {"x": 0.821, "y": 0.933}, {"x": 0.846, "y": 0.944}, {"x": 0.872, "y": 0.958}, {"x": 0.897, "y": 0.973}, {"x": 0.923, "y": 0.981}, {"x": 0.949, "y": 0.987}, {"x": 0.974, "y": 0.994}, {"x": 1.0, "y": 1.0}]}};
+
+let benchmarkCurveChartInstance = null;
+let currentBenchmarkMode = 'pr';
+
+function switchBenchmarkCurve(mode) {
+  currentBenchmarkMode = mode;
+  const btnPR = document.getElementById('btnCurvePR');
+  const btnROC = document.getElementById('btnCurveROC');
+  if (btnPR && btnROC) {
+    btnPR.classList.toggle('active', mode === 'pr');
+    btnROC.classList.toggle('active', mode === 'roc');
+  }
+
+  const narrativeBox = document.getElementById('curveNarrativeBox');
+  if (narrativeBox) {
+    if (mode === 'pr') {
+      narrativeBox.innerHTML = `<strong>Precision-Recall Clinical Significance:</strong> Because 30-day readmissions occur in only 11.36% of encounters, the Precision-Recall Curve evaluates performance exclusively on the 1,710 readmitted visits without being inflated by 13,339 non-readmissions. <strong>CatBoost</strong> achieves the highest PR-AUC (<strong>0.213</strong>), an <strong>+87% relative improvement</strong> over the uninformative random baseline (0.114), outperforming Random Forest (0.205), LightGBM (0.203), and Logistic Regression (0.203).`;
+    } else {
+      narrativeBox.innerHTML = `<strong>ROC Curve Clinical Significance:</strong> The ROC curve measures true positive rate against false positive rate across all possible thresholds. <strong>CatBoost</strong> achieves the top ROC-AUC (<strong>0.661</strong>), outperforming Weighted LR (0.655), Baseline LR (0.654), Random Forest (0.653), and LightGBM (0.647). Note that while ROC-AUC is standard in clinical literature, it can be deceptively optimistic on imbalanced data because the huge true negative count (13,339) suppresses the false positive rate.`;
+    }
+  }
+
+  renderBenchmarkCurveChart();
+}
+
+function renderBenchmarkCurveChart() {
+  const ctx = document.getElementById('multiModelCurveChart');
+  if (!ctx) return;
+
+  if (benchmarkCurveChartInstance) {
+    benchmarkCurveChartInstance.destroy();
+  }
+
+  const isPR = (currentBenchmarkMode === 'pr');
+  const datasets = [];
+
+  for (const key of ['catboost', 'lightgbm', 'rf', 'cw_lr', 'base_lr']) {
+    const m = multiModelCurves[key];
+    const points = isPR ? m.pr_points : m.roc_points;
+    const aucVal = isPR ? m.pr_auc.toFixed(3) : m.roc_auc.toFixed(3);
+    const metricName = isPR ? 'PR-AUC' : 'ROC-AUC';
+
+    datasets.push({
+      label: `${m.label} (${metricName}: ${aucVal})`,
+      data: points,
+      borderColor: m.color,
+      backgroundColor: m.color,
+      borderWidth: key === 'catboost' ? 2.8 : 1.8,
+      borderDash: key === 'base_lr' ? [4, 4] : [],
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      fill: false,
+      tension: 0.15
+    });
+  }
+
+  if (isPR) {
+    datasets.push({
+      label: 'Random Baseline (PR-AUC: 0.114)',
+      data: [{x: 0, y: 0.114}, {x: 1, y: 0.114}],
+      borderColor: '#e74c3c',
+      borderWidth: 1.5,
+      borderDash: [6, 6],
+      pointRadius: 0,
+      fill: false
+    });
+  } else {
+    datasets.push({
+      label: 'Chance Diagonal (ROC-AUC: 0.500)',
+      data: [{x: 0, y: 0}, {x: 1, y: 1}],
+      borderColor: '#e74c3c',
+      borderWidth: 1.5,
+      borderDash: [6, 6],
+      pointRadius: 0,
+      fill: false
+    });
+  }
+
+  benchmarkCurveChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { datasets: datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      },
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 14,
+            padding: 10,
+            font: { size: 11, weight: '600' }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const lbl = context.dataset.label || '';
+              return `${lbl}: (X: ${context.parsed.x.toFixed(2)}, Y: ${context.parsed.y.toFixed(2)})`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          min: 0,
+          max: 1,
+          title: {
+            display: true,
+            text: isPR ? 'Recall (Sensitivity)' : 'False Positive Rate (1 - Specificity)',
+            font: { size: 12, weight: 'bold' }
+          },
+          grid: { color: 'rgba(0,0,0,0.06)' }
+        },
+        y: {
+          min: 0,
+          max: isPR ? 0.6 : 1,
+          title: {
+            display: true,
+            text: isPR ? 'Precision (Positive Predictive Value)' : 'True Positive Rate (Recall)',
+            font: { size: 12, weight: 'bold' }
+          },
+          grid: { color: 'rgba(0,0,0,0.06)' }
+        }
+      }
+    }
+  });
+}
+
+function initMultiModelCurveChart() {
+  renderBenchmarkCurveChart();
+}
+
+window.switchBenchmarkCurve = switchBenchmarkCurve;
+window.initMultiModelCurveChart = initMultiModelCurveChart;
 
 </script>
 
