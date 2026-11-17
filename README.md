@@ -473,29 +473,45 @@ git push origin main
 
 ## 14. Individual Contributions & Understanding
 
-The project was completed collaboratively, with the following primary areas of responsibility.
+The project was completed collaboratively by two team members with complementary primary responsibilities. Nagayaswanth focused on baseline classifiers, class-imbalance experiments and the Random Forest feature-engineering study. Arumuru Ram Vara Prasad focused on the data pipeline, advanced gradient-boosting models and the interactive website. Both members contributed to understanding the problem, discussing the methodology and reviewing the overall findings.
 
-### Prattipati Nagayaswanth — Model Development & Evaluation
-- Focused on the model experiments and comparison: unweighted and class-weighted Logistic Regression, Random Forest, the feature-engineering ablation, CatBoost and LightGBM.
-- Examined class imbalance and the limitations of accuracy, and compared precision, recall, F1, PR-AUC and ROC-AUC.
-- Interpreted threshold trade-offs and the effects of false-positive and false-negative predictions.
-- Identified that the untouched test set still needs final evaluation after model and threshold selection.
+### Prattipati Nagayaswanth — Baseline Models & Experimental Analysis
 
-**Reflection:** High accuracy can hide very poor recall for the minority class. Class weighting and threshold changes can increase recall, but they may also increase false-positive alerts. The model should therefore be evaluated according to the intended decision context, not by accuracy alone.
+**Primary contribution:** Focused on establishing baseline machine-learning models and conducting controlled experiments to understand the effect of class imbalance and feature engineering on hospital readmission prediction. This included implementing and evaluating unweighted Logistic Regression, class-weighted Logistic Regression and Random Forest, followed by a feature-engineering experiment comparing the original Random Forest feature set with additional engineered features.
 
-**Proposed improvement:** After locking model and threshold choices using training and validation data, evaluate once on the held-out test set and report the final error trade-off without tuning on the test set.
+**Key decisions and technical reasoning:**
+- Established unweighted Logistic Regression as a baseline to understand how a conventional classifier behaves when early readmissions represent only about 11.36% of encounters.
+- Investigated class weighting to address poor detection of minority-class readmissions.
+- Compared accuracy, precision, recall, F1-score, PR-AUC and ROC-AUC rather than relying on accuracy alone.
+- Conducted a controlled Random Forest experiment by adding `medication_changes_count` and `has_specialty`, while retaining the same patient-grouped evaluation approach.
+- Examined whether the additional features improved predictive performance instead of assuming that a larger feature set would perform better.
 
-### Arumuru Ram Vara Prasad — Data Preparation, Preprocessing & Website Development
-- Focused on dataset cleaning and exploratory analysis, diagnosis and medical-specialty grouping, medication-feature analysis, and the preprocessing audit trail.
-- Worked on patient-disjoint data splitting, keeping patient identifiers out of the predictor matrix, and documenting missing-value and feature-reduction decisions.
-- Developed the interactive website and its explanation of the project workflow, results, error analysis, limitations and threshold exploration.
+**Evidence in this project:** `Training/train_logistic_regression_care_continuum.py`, `Training/train_class_weighted_logistic_regression_care_continuum.py`, `Training/train_random_forest_leakage_aware.py` and `Training/train_random_forest_feature_engineering_experiment.py`, together with their saved validation metrics under `models/logistic_regression/`, `models/logistic_regression_weighted/`, `models/random_forest_leakage_aware/` and `models/random_forest_feature_engineering_experiment/`.
 
-**Reflection:** In clinical encounter data, preprocessing choices need domain-aware reasoning. Repeated encounters from one patient must be handled carefully during splitting, and a feature should only be used when it is available at the intended prediction time.
+**What I learned:** Accuracy can be misleading in an imbalanced classification problem. The unweighted Logistic Regression model achieved approximately 88.60% validation accuracy but only 2.05% recall for early readmissions at threshold 0.5. Applying class weighting increased recall to 53.33%, but reduced accuracy to 66.02% and precision to 17.45%. This demonstrated the trade-off between identifying more readmissions and generating additional false-positive predictions. The feature-engineering experiment also showed that adding variables does not necessarily improve a model: validation PR-AUC decreased from 0.2049 for the baseline Random Forest to 0.2014 for the engineered version.
 
-**Proposed improvement:** Connect the interactive risk estimator to the actual saved model through a verified inference service, or explicitly label the current coefficient-based JavaScript estimator as illustrative. Keep the final test partition untouched until evaluation.
+**Limitation identified and proposed improvement:** The baseline and engineered experiments were evaluated using the available patient-grouped training and validation design, but the held-out test set has not yet been evaluated. The engineered features also did not improve the reported validation results. A next step would be to investigate further feature-ablation experiments, finalise the model and threshold using training and validation data, and evaluate once on the untouched test set to obtain an independent estimate of performance.
+
+### Arumuru Ram Vara Prasad — Data Pipeline, Advanced Models & Website Development
+
+**Primary contribution:** Focused on preparing the hospital encounter dataset, developing the preprocessing pipeline, evaluating the advanced gradient-boosting models and integrating the project into an interactive website. This included data cleaning, exploratory analysis, diagnosis and medical-specialty grouping, medication-feature analysis, and the development of the website's interactive model-exploration tools.
+
+**Key decisions and technical reasoning:**
+- Investigated missing values, rare categories and the clinical meaning of dataset variables.
+- Developed diagnosis grouping, specialty consolidation and medication-feature analysis.
+- Worked on patient-disjoint data preparation, ensuring that encounters belonging to the same patient were assigned to a single data partition.
+- Evaluated CatBoost and LightGBM using validation outputs and metrics suitable for the imbalanced readmission task.
+- Developed the website's model-comparison and threshold-exploration sections, allowing users to examine how classification thresholds affect precision, recall, F1-score and confusion-matrix outcomes.
+
+**Evidence in this project:** Files under `data_cleaning/`, `data_analysis/`, `Preprocessing/` and `Reports/`; CatBoost and LightGBM training and validation artefacts under `Training/` and `models/`; and the interactive website in `index.html`, with supporting project documentation in `README.md`.
+
+**What I learned:** The quality of a machine-learning result depends on more than model selection. Data cleaning, meaningful feature transformations, patient-level splitting and correct interpretation of evaluation metrics are essential. The interactive threshold explorer also demonstrates that changing a decision threshold alters the balance between detecting readmissions and generating false-positive alerts.
+
+**Limitation identified and proposed improvement:** The current browser-based patient-risk estimator uses a fixed coefficient-based JavaScript formula rather than loading the trained CatBoost model. It should therefore be treated as an illustrative simulator. A future improvement would be to connect the interface to a verified model-serving backend and evaluate the final model on the untouched test set.
 
 ### Shared Work
-Both members contributed to the overall project direction, understanding the readmission task, interpreting results, reviewing limitations and integrating the work into the final submission. The roles above describe the primary division of responsibility; key project decisions were discussed collaboratively.
+
+Both members contributed to understanding the 30-day readmission problem, discussing methodological choices, interpreting the overall findings, reviewing limitations and integrating their work into the final project. The responsibilities above describe the primary division of work, while key project decisions and final review were collaborative.
 
 ## 15. AI-Use Disclosure
 
