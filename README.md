@@ -26,7 +26,9 @@
 11. [Interactive Clinical Dashboard Suite](#11-interactive-clinical-dashboard-suite)
 12. [Repository Structure](#12-repository-structure)
 13. [Environment Setup & Reproduction Guide](#13-environment-setup--reproduction-guide)
-17. [References & Citations](#17-references--citations)
+14. [Individual Contributions & Understanding](#14-individual-contributions--understanding)
+15. [AI-Use Disclosure](#15-ai-use-disclosure)
+16. [References & Citations](#16-references--citations)
 
 ---
 
@@ -440,7 +442,7 @@ git push origin main
 
 ---
 
-## 15. Individual Contributions & Understanding
+## 14. Individual Contributions & Understanding
 
 The project was completed collaboratively, with the following primary areas of responsibility.
 
@@ -466,7 +468,7 @@ The project was completed collaboratively, with the following primary areas of r
 ### Shared Work
 Both members contributed to the overall project direction, understanding the readmission task, interpreting results, reviewing limitations and integrating the work into the final submission. The roles above describe the primary division of responsibility; key project decisions were discussed collaboratively.
 
-## 16. AI-Use Disclosure
+## 15. AI-Use Disclosure
 
 AI tools were used as assistance during code development, debugging, technical explanation and documentation. The team is responsible for reviewing the submitted code, verifying the reported results against the saved experiment outputs, and checking that the final interpretations and claims are supported by the project artefacts.
 
@@ -475,7 +477,7 @@ AI tools were used as assistance during code development, debugging, technical e
 *Care Continuum — Advancing transitional care intelligence through leakage-free machine learning.*  
 *Course Project for ES 335: Machine Learning, Indian Institute of Technology Gandhinagar.*
 
-## 17. References & Citations
+## 16. References & Citations
 
 1. **UCI Diabetes 130-US Hospitals Dataset**:  
    Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c Measurement on Hospital Readmission Rates: Analysis of 70,000 Clinical Database Patient Records.* BioMed Research International, 2014, 781670.
