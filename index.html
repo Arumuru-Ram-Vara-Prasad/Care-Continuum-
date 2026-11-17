@@ -2937,12 +2937,9 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
         
       </div>
 
-      <!-- CARD 1: 3-PARTITION COHORT ARCHITECTURE & ZERO-LEAKAGE SHIELD -->
+      <!-- CARD 1: 3-PARTITION COHORT ARCHITECTURE -->
       <div class="card">
-        <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
-          <span>Patient-Disjoint 3-Partition Split Architecture</span>
-          <span style="font-size:0.75rem; font-weight:600; padding:0.25rem 0.65rem; background:#e8f4fd; color:var(--primary); border-radius:999px;">Strict Zero-Overlap Shield</span>
-        </div>
+        <div class="card-title">Patient-Disjoint 3-Partition Split Architecture</div>
         <p style="font-size:0.88rem; color:var(--gray-700); margin-bottom:1rem; line-height:1.55;">
           A foundational vulnerability in EHR readmission modeling is <em>patient leakage</em>: if multiple encounters from the same chronic diabetic patient are randomly scattered between training and test sets, models memorize idiosyncratic patient traits (e.g., unique medication mixes or lab patterns) rather than learning generalizable risk factors. To guarantee clinical validity, we partitioned all 100,114 encounters into three strictly patient-disjoint sets using <code>GroupShuffleSplit</code> keyed on <code>patient_nbr</code>.
         </p>
