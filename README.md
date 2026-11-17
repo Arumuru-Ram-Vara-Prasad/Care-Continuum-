@@ -310,7 +310,7 @@ These values are relative model-importance scores. Clinical explanations beside 
 
 The project includes an interactive web dashboard hosted live at [https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/) and contained locally in `index.html`:
 
-1. **Quick Bedside Risk Estimator (Section 1)**:
+1. **Quick Risk Estimator (Section 1)**:
    - Clinicians can adjust 8 top predictive parameters (prior inpatient visits, length of stay, lab procedures, medications, diagnoses, emergency visits, outpatient visits, and discharge disposition).
    - Powered by a fitted 8-feature logistic scoring model calibrated on the training cohort using top SHAP features, delivering 89.2% risk-tier concordance with the full CatBoost ensemble with instantaneous client-side inference.
    - Generates real-time readmission risk probabilities with dynamic clinical tiering: *Low Risk* (<15%), *Moderate Risk* (15–30%), or *High Risk* (>30%) along with actionable transitional care recommendations.

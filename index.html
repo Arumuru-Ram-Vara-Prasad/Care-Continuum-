@@ -1510,14 +1510,14 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
   </div>
   <nav>
     <a href="#problem" class="active"><span class="nav-num">1</span>Problem Formulation &amp; Scope</a>
-    <a href="#risk-predictor"><span class="nav-num" style="background:rgba(255,255,255,0.15); color:var(--white);">RP</span>Readmission Risk Predictor</a>
+    <a href="#risk-predictor"><span class="nav-num" style="background:rgba(255,255,255,0.15); color:var(--white);">RP</span>Quick Risk Estimator</a>
     <a href="#data"><span class="nav-num">2</span>Data Understanding</a>
     <a href="#preprocessing"><span class="nav-num">3</span>Preprocessing &amp; Statistical Reasoning</a>
     <a href="#methods"><span class="nav-num">4</span>Baseline &amp; Method Selection</a>
     <a href="#evaluation"><span class="nav-num">5</span>Evaluation Design &amp; Metrics</a>
     <a href="#results"><span class="nav-num">6</span>Results, Errors &amp; Limitations</a>
     <a href="#reproducibility"><span class="nav-num">7</span>Reproducibility &amp; Technical Integrity</a>
-    <a href="#interactive"><span class="nav-num">7</span>Interactive Exploration</a>
+    <a href="#interactive" style="padding-left:1.25rem;">Interactive Exploration</a>
     <a href="#individual"><span class="nav-num">8</span>Individual Understanding</a>
   </nav>
 </aside>
@@ -1591,12 +1591,12 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
     <section class="section" id="risk-predictor">
       <div class="section-header">
         <span class="section-num" style="background:var(--accent); font-size:0.85rem; font-weight:700;">RP</span>
-        <h2>Quick Bedside Risk Estimator</h2>
+        <h2>Quick Risk Estimator</h2>
         <span class="pts" style="background:#e8f4fd; color:var(--primary); padding:3px 10px; border-radius:12px; font-weight:700;">Live Interactive Inference</span>
       </div>
 
       <div class="highlight-box">
-        <strong>Bedside Model Specification:</strong> This calculator uses a fitted 8-feature logistic scoring model derived from our training cohort using the top predictors identified by CatBoost and TreeSHAP. It enables rapid, transparent bedside risk estimation directly in the browser without loading the full 189-feature matrix, maintaining an empirical <strong>89.2% risk-tier concordance</strong> with the primary CatBoost ensemble. All numeric EHR codes have been translated into plain clinical language.
+        <strong>Model Specification:</strong> This is a quick risk estimator powered by a fitted 8-feature logistic scoring model derived from our training cohort using the top predictors identified by CatBoost and TreeSHAP. It enables rapid, transparent risk estimation directly in the browser without loading the full 189-feature matrix, maintaining an empirical <strong>89.2% risk-tier concordance</strong> with the primary CatBoost ensemble. All numeric EHR codes have been translated into plain clinical language.
       </div>
 
       <!-- Quick Preset Profiles -->
@@ -3530,9 +3530,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
     <!-- ============================== INTERACTIVE SECTION ============================== -->
     <section class="section" id="interactive">
       <div class="section-header">
-        <span class="section-num">7</span>
         <h2>Interactive Exploration</h2>
-        
       </div>
 
       <p style="margin-bottom:1.5rem; font-size:0.92rem; color:var(--gray-700);">
