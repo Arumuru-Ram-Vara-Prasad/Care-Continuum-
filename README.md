@@ -468,6 +468,36 @@ This project is structured in rigorous compliance with academic evaluation stand
 5. **Class Imbalance in Clinical Machine Learning**:  
    Saito, T., & Rehmsmeier, M. (2015). *The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets.* PLOS ONE, 10(3), e0118432.
 
+## 15. Individual Contributions & Understanding
+
+The project was completed collaboratively, with the following primary areas of responsibility.
+
+### Prattipati Nagayaswanth — Model Development & Evaluation
+- Focused on the model experiments and comparison: unweighted and class-weighted Logistic Regression, Random Forest, the feature-engineering ablation, CatBoost and LightGBM.
+- Examined class imbalance and the limitations of accuracy, and compared precision, recall, F1, PR-AUC and ROC-AUC.
+- Interpreted threshold trade-offs and the effects of false-positive and false-negative predictions.
+- Identified that the untouched test set still needs final evaluation after model and threshold selection.
+
+**Reflection:** High accuracy can hide very poor recall for the minority class. Class weighting and threshold changes can increase recall, but they may also increase false-positive alerts. The model should therefore be evaluated according to the intended decision context, not by accuracy alone.
+
+**Proposed improvement:** After locking model and threshold choices using training and validation data, evaluate once on the held-out test set and report the final error trade-off without tuning on the test set.
+
+### Arumuru Ram Vara Prasad — Data Preparation, Preprocessing & Website Development
+- Focused on dataset cleaning and exploratory analysis, diagnosis and medical-specialty grouping, medication-feature analysis, and the preprocessing audit trail.
+- Worked on patient-disjoint data splitting, keeping patient identifiers out of the predictor matrix, and documenting missing-value and feature-reduction decisions.
+- Developed the interactive website and its explanation of the project workflow, results, error analysis, limitations and threshold exploration.
+
+**Reflection:** In clinical encounter data, preprocessing choices need domain-aware reasoning. Repeated encounters from one patient must be handled carefully during splitting, and a feature should only be used when it is available at the intended prediction time.
+
+**Proposed improvement:** Connect the interactive risk estimator to the actual saved model through a verified inference service, or explicitly label the current coefficient-based JavaScript estimator as illustrative. Keep the final test partition untouched until evaluation.
+
+### Shared Work
+Both members contributed to the overall project direction, understanding the readmission task, interpreting results, reviewing limitations and integrating the work into the final submission. The roles above describe the primary division of responsibility; key project decisions were discussed collaboratively.
+
+## 16. AI-Use Disclosure
+
+AI tools were used as assistance during code development, debugging, technical explanation and documentation. The team is responsible for reviewing the submitted code, verifying the reported results against the saved experiment outputs, and checking that the final interpretations and claims are supported by the project artefacts.
+
 ---
 
 *Care Continuum — Advancing transitional care intelligence through leakage-free machine learning.*  
