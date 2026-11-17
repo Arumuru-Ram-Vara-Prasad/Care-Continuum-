@@ -26,8 +26,9 @@
 11. [Interactive Clinical Dashboard Suite](#11-interactive-clinical-dashboard-suite)
 12. [Repository Structure](#12-repository-structure)
 13. [Environment Setup & Reproduction Guide](#13-environment-setup--reproduction-guide)
-14. [Academic Rubric Alignment](#14-academic-rubric-alignment)
-15. [References & Citations](#15-references--citations)
+14. [Individual Contributions & Understanding](#14-individual-contributions--understanding)
+15. [AI-Use Disclosure](#15-ai-use-disclosure)
+16. [References & Citations](#16-references--citations)
 
 ---
 
@@ -286,20 +287,22 @@ The engineered features introduced collinearity and diluted tree split entropy a
 
 ## 10. Explainability & Clinical Feature Importance
 
-To enable trusted clinical adoption, our models provide both global and local interpretability via **TreeSHAP (Shapley Additive Explanations)**:
+The CatBoost training script exports the model's built-in global feature-importance values using `get_feature_importance()`. This gives a dataset-level ranking of which inputs the fitted model used most. It is **not TreeSHAP**, does not provide patient-level explanations, and must not be interpreted as evidence of causation.
 
-### Top 8 Predictors of 30-Day Readmission
+### Top 8 Features by CatBoost Global Importance
 
-| Rank | Clinical Feature | Clinical Rationale & Attribution |
-| :---: | :--- | :--- |
-| **1** | `number_inpatient` | **Past inpatient admissions in preceding 12 months.** The single strongest predictor of chronic vulnerability and healthcare system dependency. |
-| **2** | `discharge_disposition_id` | **Discharge destination.** Transfers to skilled nursing facilities (SNF) or home health services exhibit markedly higher readmission likelihood than routine home discharges. |
-| **3** | `number_diagnoses` | **Systemic comorbidity burden.** Patients carrying 9+ ICD-9 diagnostic codes exhibit multi-organ fragility and complex therapeutic contraindications. |
-| **4** | `num_medications` | **Polypharmacy marker.** High prescription count correlates with adverse drug interactions, compliance challenges, and complex dosing. |
-| **5** | `num_lab_procedures` | **Inpatient diagnostic intensity.** Reflects acute physiological instability requiring frequent inpatient blood and diagnostic monitoring. |
-| **6** | `time_in_hospital` | **Encounter acuity.** Extended length of stay reflects clinical complications, nosocomial infection risks, or functional deconditioning. |
-| **7** | `number_emergency` | **Acute unscheduled care reliance.** High past ED visits indicate sub-optimal outpatient primary care access and ambulatory care-sensitive relapse. |
-| **8** | `diabetesMed` / `insulin` | **Active glycemic pharmacotherapy.** Patients requiring exogenous insulin or multiple oral hypoglycemics exhibit higher metabolic instability than diet-managed patients. |
+| Rank | Feature | Importance (%) |
+| :---: | :--- | ---: |
+| **1** | `num_lab_procedures` | 9.15 |
+| **2** | `num_medications` | 8.10 |
+| **3** | `discharge_disposition_id` | 7.96 |
+| **4** | `diag_1_group` | 7.51 |
+| **5** | `number_inpatient` | 6.09 |
+| **6** | `time_in_hospital` | 5.42 |
+| **7** | `age` | 4.88 |
+| **8** | `diag_2_group` | 4.80 |
+
+These values are relative model-importance scores. Clinical explanations beside them should be treated as possible context for the associations, not as causal effects.
 
 ---
 
@@ -337,9 +340,9 @@ The project includes an interactive web dashboard hosted live at [https://arumur
 ```
 Care Continum/
 │
-├── index.html                                 # Interactive web application & clinical dashboard
-├── styles.css                                 # Professional healthcare dashboard styling
-├── app.js                                     # Real-time risk estimation logic & dashboard controls
+├── index.html                                 # Current published dashboard; CSS and JavaScript are embedded
+├── styles.css                                 # Standalone stylesheet retained in repository; not imported by current index.html
+├── app.js                                     # Standalone JavaScript retained in repository; not imported by current index.html
 ├── README.md                                  # Academic & technical documentation
 ├── care_continuum_data_cleaning_decisions.pdf # Historical cleaning documentation
 ├── confusion_matrix_image.py                  # Standalone confusion matrix plotting utility
@@ -428,7 +431,7 @@ pip install numpy pandas scipy scikit-learn catboost lightgbm joblib matplotlib
 ```bash
 python Preprocessing/prepare_model_data.py
 ```
-*Outputs: Generates `X_train.npz`, `X_validation.npz`, `X_test.npz`, target vectors in `dataset/`, and saves `preprocessor.joblib` in `Preprocessing/model_ready/`.*
+*Outputs: The current script writes the sparse feature matrices, target files, split assignments, fitted preprocessor, metadata, and audits to `dataset/model_ready/`. The repository also retains previously generated split files at the top level of `dataset/`; keep these locations distinct when checking which artefacts a training script loads.*
 
 #### 4. Train & Benchmark Models
 ```bash
@@ -447,7 +450,7 @@ python Training/train_random_forest_feature_engineering_experiment.py
 # 5. Train LightGBM Classifier
 python Training/train_lightgbm.py
 
-# 6. Train Production Champion CatBoost Model
+# 6. Train the primary CatBoost model
 python Training/train_catboost.py
 ```
 
@@ -468,23 +471,42 @@ git push origin main
 
 ---
 
-## 14. Academic Rubric Alignment
+## 14. Individual Contributions & Understanding
 
-This project is structured in rigorous compliance with academic evaluation standards (ES 335: Machine Learning, IIT Gandhinagar):
+The project was completed collaboratively, with the following primary areas of responsibility.
 
-| Rubric Dimension | Project Implementation & Proof of Compliance | Points / Weight |
-| :--- | :--- | :---: |
-| **Problem Formulation & Clinical Framing** | Formulated binary 30-day readmission prediction against CMS HRRP economic standards. Explicitly defined and justified the clinical decision point at inpatient discharge planning. | **10 pts** |
-| **Data Understanding & Preprocessing** | Analyzed 101,766 encounters; conducted ICD-9 organ mapping (9 categories), specialty consolidation (17 departments), semantic "Not Measured" imputation, and FDR-controlled rare medication pruning. | **15 pts** |
-| **Leakage-Free Validation Design** | Implemented `GroupShuffleSplit` on `patient_nbr` across 70,439 patients. Refit preprocessing strictly inside 5-fold `GroupKFold` folds. Locked test set (19,955 encounters) untouched during model tuning. | **20 pts** |
-| **Baseline & Model Progression** | Documented progression from naive unweighted LR (identifying recall collapse) to class-balanced LR, Random Forest, feature ablation, and gradient boosting (CatBoost vs. LightGBM). | **15 pts** |
-| **Methodological Rigor & Negative Results** | Reported honest negative result on feature engineering ablation (RF PR-AUC drop from 0.2049 to 0.2014). Prioritized PR-AUC over inflated ROC-AUC and Accuracy. | **15 pts** |
-| **Interpretability & Interactive Interface** | Deployed TreeSHAP global feature attributions. Built responsive web dashboard (`index.html`) with interactive patient risk predictor and cross-model confusion matrix simulator. | **15 pts** |
-| **Reproducibility & Engineering Cleanliness** | Comprehensive README, clean scripts, modular directory structure, fixed random seeds (`random_state=42`), and serialized artifacts. | **10 pts** |
+### Prattipati Nagayaswanth — Model Development & Evaluation
+- Focused on the model experiments and comparison: unweighted and class-weighted Logistic Regression, Random Forest, the feature-engineering ablation, CatBoost and LightGBM.
+- Examined class imbalance and the limitations of accuracy, and compared precision, recall, F1, PR-AUC and ROC-AUC.
+- Interpreted threshold trade-offs and the effects of false-positive and false-negative predictions.
+- Identified that the untouched test set still needs final evaluation after model and threshold selection.
+
+**Reflection:** High accuracy can hide very poor recall for the minority class. Class weighting and threshold changes can increase recall, but they may also increase false-positive alerts. The model should therefore be evaluated according to the intended decision context, not by accuracy alone.
+
+**Proposed improvement:** After locking model and threshold choices using training and validation data, evaluate once on the held-out test set and report the final error trade-off without tuning on the test set.
+
+### Arumuru Ram Vara Prasad — Data Preparation, Preprocessing & Website Development
+- Focused on dataset cleaning and exploratory analysis, diagnosis and medical-specialty grouping, medication-feature analysis, and the preprocessing audit trail.
+- Worked on patient-disjoint data splitting, keeping patient identifiers out of the predictor matrix, and documenting missing-value and feature-reduction decisions.
+- Developed the interactive website and its explanation of the project workflow, results, error analysis, limitations and threshold exploration.
+
+**Reflection:** In clinical encounter data, preprocessing choices need domain-aware reasoning. Repeated encounters from one patient must be handled carefully during splitting, and a feature should only be used when it is available at the intended prediction time.
+
+**Proposed improvement:** Connect the interactive risk estimator to the actual saved model through a verified inference service, or explicitly label the current coefficient-based JavaScript estimator as illustrative. Keep the final test partition untouched until evaluation.
+
+### Shared Work
+Both members contributed to the overall project direction, understanding the readmission task, interpreting results, reviewing limitations and integrating the work into the final submission. The roles above describe the primary division of responsibility; key project decisions were discussed collaboratively.
+
+## 15. AI-Use Disclosure
+
+AI tools were used as assistance during code development, debugging, technical explanation and documentation. The team is responsible for reviewing the submitted code, verifying the reported results against the saved experiment outputs, and checking that the final interpretations and claims are supported by the project artefacts.
 
 ---
 
-## 15. References & Citations
+*Care Continuum — Advancing transitional care intelligence through leakage-free machine learning.*  
+*Course Project for ES 335: Machine Learning, Indian Institute of Technology Gandhinagar.*
+
+## 16. References & Citations
 
 1. **UCI Diabetes 130-US Hospitals Dataset**:  
    Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c Measurement on Hospital Readmission Rates: Analysis of 70,000 Clinical Database Patient Records.* BioMed Research International, 2014, 781670.
@@ -492,12 +514,6 @@ This project is structured in rigorous compliance with academic evaluation stand
    Centers for Medicare & Medicaid Services. *Hospital Readmissions Reduction Program (HRRP).* Section 3025 of the Affordable Care Act (ACA), Social Security Act § 1886(q).
 3. **CatBoost Algorithm**:  
    Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., & Gulin, A. (2018). *CatBoost: unbiased boosting with categorical features.* Advances in Neural Information Processing Systems (NeurIPS 2018), 31.
-4. **SHAP (SHapley Additive exPlanations)**:  
-   Lundberg, S. M., Erion, G., Chen, H., DeGrave, A., Prutkin, J. M., Nair, B., Katz, R., Himmelfarb, J., Bansal, N., & Lee, S. I. (2020). *From local explanations to global understanding with explainable AI for trees.* Nature Machine Intelligence, 2(1), 56–67.
-5. **Class Imbalance in Clinical Machine Learning**:  
+
+4. **Class Imbalance in Clinical Machine Learning**:  
    Saito, T., & Rehmsmeier, M. (2015). *The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets.* PLOS ONE, 10(3), e0118432.
-
----
-
-*Care Continuum — Advancing transitional care intelligence through leakage-free machine learning.*  
-*Course Project for ES 335: Machine Learning, Indian Institute of Technology Gandhinagar.*
