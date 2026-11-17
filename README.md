@@ -1,28 +1,33 @@
 # Care Continuum: 30-Day Hospital Readmission Prediction for Diabetic Inpatients
 
-**Course Project:** ES 335 — Machine Learning  
-**Institution:** Indian Institute of Technology Gandhinagar (IIT Gandhinagar)  
-**Domain:** Healthcare Machine Learning, Clinical Decision Support Systems, Imbalanced Learning  
-**Live Interactive Dashboard:** `index.html` (Local Web Application)
+[![Live Dashboard](https://img.shields.io/badge/Live%20Dashboard-GitHub%20Pages-2ea44f?logo=github&logoColor=white&style=for-the-badge)](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=white&style=for-the-badge)](https://github.com/Arumuru-Ram-Vara-Prasad/Care-Continuum-)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white&style=for-the-badge)](https://www.python.org/)
+[![Course](https://img.shields.io/badge/Course-ES%20335%20Machine%20Learning-orange?style=for-the-badge)](https://iitgn.ac.in/)
+[![Institution](https://img.shields.io/badge/IIT-Gandhinagar-B31B1B?style=for-the-badge)](https://iitgn.ac.in/)
+
+> **Live Interactive Web Application:** [https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/)  
+> *Access the live clinical decision support system directly in your browser — zero installation or local server required. Includes the real-time Patient Readmission Risk Calculator and the Cross-Model & Threshold Simulator.*
 
 ---
 
 ## Table of Contents
 
 1. [Executive Summary & Clinical Motivation](#1-executive-summary--clinical-motivation)
-2. [Clinical Stakes & Economic Context](#2-clinical-stakes--economic-context)
-3. [Problem Formulation & Deployment Timing](#3-problem-formulation--deployment-timing)
-4. [Dataset & Patient-Disjoint Cohort Design](#4-dataset--patient-disjoint-cohort-design)
-5. [Leakage-Free 7-Stage Preprocessing Pipeline](#5-leakage-free-7-stage-preprocessing-pipeline)
-6. [Model Progression Ladder & Inductive Biases](#6-model-progression-ladder--inductive-biases)
-7. [Comprehensive Model Evaluation & Results](#7-comprehensive-model-evaluation--results)
-8. [Feature Engineering Ablation: A Rigorous Negative Result](#8-feature-engineering-ablation-a-rigorous-negative-result)
-9. [Explainability & Clinical Feature Importance](#9-explainability--clinical-feature-importance)
-10. [Interactive Clinical Dashboard](#10-interactive-clinical-dashboard)
-11. [Repository Structure](#11-repository-structure)
-12. [Environment Setup & Reproduction Guide](#12-environment-setup--reproduction-guide)
-13. [Academic Rubric Alignment](#13-academic-rubric-alignment)
-14. [References & Citations](#14-references--citations)
+2. [Live Web Deployment (GitHub Pages)](#2-live-web-deployment-github-pages)
+3. [Clinical Stakes & Economic Context](#3-clinical-stakes--economic-context)
+4. [Problem Formulation & Deployment Timing](#4-problem-formulation--deployment-timing)
+5. [Dataset & Patient-Disjoint Cohort Design](#5-dataset--patient-disjoint-cohort-design)
+6. [Leakage-Free 7-Stage Preprocessing Pipeline](#6-leakage-free-7-stage-preprocessing-pipeline)
+7. [Model Progression Ladder & Inductive Biases](#7-model-progression-ladder--inductive-biases)
+8. [Comprehensive Model Evaluation & Results](#8-comprehensive-model-evaluation--results)
+9. [Feature Engineering Ablation: A Rigorous Negative Result](#9-feature-engineering-ablation-a-rigorous-negative-result)
+10. [Explainability & Clinical Feature Importance](#10-explainability--clinical-feature-importance)
+11. [Interactive Clinical Dashboard Suite](#11-interactive-clinical-dashboard-suite)
+12. [Repository Structure](#12-repository-structure)
+13. [Environment Setup & Reproduction Guide](#13-environment-setup--reproduction-guide)
+14. [Academic Rubric Alignment](#14-academic-rubric-alignment)
+15. [References & Citations](#15-references--citations)
 
 ---
 
@@ -33,6 +38,7 @@ Hospital readmissions within 30 days of inpatient discharge are a critical indic
 **Care Continuum** is an end-to-end, leakage-free clinical machine learning system developed on the multi-hospital **UCI Diabetes 130-US Hospitals** dataset (1999–2008). The system predicts whether a hospitalized diabetic patient will experience an **unplanned 30-day all-cause hospital readmission**.
 
 ### Key System Achievements
+- **Live Serverless Deployment**: Fully deployed and publicly accessible via GitHub Pages at [arumuru-ram-vara-prasad.github.io/Care-Continuum-](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/).
 - **Strict Leakage-Free Design**: Prevents patient-level clinical memorization via `GroupShuffleSplit` across 70,439 unique patients, guaranteeing 0% patient overlap between training, validation, and holdout test partitions.
 - **Systematic Model Progression**: Implements and benchmarks 5 model architectures spanning parametric linear baselines, tree ensembles, and modern gradient boosters:
   - *Baseline Unweighted Logistic Regression* (suffered severe minority recall collapse: 2.05% recall at threshold 0.50)
@@ -40,11 +46,25 @@ Hospital readmissions within 30 days of inpatient discharge are a critical indic
   - *Leakage-Aware Random Forest* (bagged ensemble, PR-AUC: 0.2049)
   - *Feature Engineering Experiment* (reported an honest **negative result**: medication change counts and specialty flags reduced PR-AUC from 0.2049 to 0.2014, and were scientifically discarded)
   - *Gradient Boosting Face-Off (LightGBM vs. CatBoost)*: **CatBoost** emerged as the primary production champion, attaining top discrimination on the primary imbalanced clinical metric (**PR-AUC: 0.2128**, **ROC-AUC: 0.6609**, **Recall: 51.35%**, **F1: 0.2705** at threshold 0.50).
-- **Interactive Decision Support Suite**: A fully responsive web dashboard (`index.html`) featuring an interactive patient readmission risk calculator, a cross-model and threshold confusion matrix simulator, and clinical explainability visualizations.
+- **Interactive Decision Support Suite**: A fully responsive web dashboard featuring an interactive patient readmission risk calculator, a cross-model and threshold confusion matrix simulator, and clinical explainability visualizations.
 
 ---
 
-## 2. Clinical Stakes & Economic Context
+## 2. Live Web Deployment (GitHub Pages)
+
+The complete Care Continuum clinical decision interface is hosted live via **GitHub Pages**:
+
+* **Live URL:** [https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/)
+* **Source Repository:** [https://github.com/Arumuru-Ram-Vara-Prasad/Care-Continuum-](https://github.com/Arumuru-Ram-Vara-Prasad/Care-Continuum-)
+
+### Architecture & Privacy Highlights
+- **100% Client-Side Execution:** Risk score inference, dynamic Chart.js rendering, and the interactive confusion matrix recalculations execute entirely inside the user's web browser using vanilla JavaScript.
+- **Zero Protected Health Information (PHI) Network Transmission:** Because inference logic runs client-side, hypothetical patient health data is never transmitted across the network, adhering to strict patient data isolation principles.
+- **Cross-Platform Compatibility:** Responsive layout verified across desktop browsers (Chrome, Edge, Firefox, Safari) and mobile displays.
+
+---
+
+## 3. Clinical Stakes & Economic Context
 
 ### The Economic Stakes: CMS HRRP
 Under the **Hospital Readmissions Reduction Program (HRRP)** established by the Centers for Medicare & Medicaid Services (CMS) under Section 3025 of the Affordable Care Act (ACA), hospitals face financial penalties of up to **3.0% of their total Medicare inpatient reimbursement revenue** if their 30-day readmission rates exceed risk-adjusted national benchmarks. For a typical regional hospital network, this represents millions of dollars in annual penalty exposure.
@@ -56,7 +76,7 @@ Traditional inpatient triage relies heavily on simple manual scoring heuristics 
 
 ---
 
-## 3. Problem Formulation & Deployment Timing
+## 4. Problem Formulation & Deployment Timing
 
 ### Binary Target Formulation
 Given an inpatient admission encounter vector $\mathbf{x} \in \mathbb{R}^d$, the objective is to predict binary label $y \in \{0, 1\}$:
@@ -75,7 +95,7 @@ A vital methodological distinction in clinical ML is identifying **when** the pr
 
 ---
 
-## 4. Dataset & Patient-Disjoint Cohort Design
+## 5. Dataset & Patient-Disjoint Cohort Design
 
 ### Source Dataset
 - **Database**: UCI Machine Learning Repository — Diabetes 130-US Hospitals (1999–2008).
@@ -104,7 +124,7 @@ In clinical electronic health records, approximately one-third of diabetic patie
 
 ---
 
-## 5. Leakage-Free 7-Stage Preprocessing Pipeline
+## 6. Leakage-Free 7-Stage Preprocessing Pipeline
 
 To eliminate data leakage, all imputation statistics, standard scalers, and categorical encoders were fitted **exclusively on the training partition** (and inside each cross-validation fold) and transformed onto validation and test splits:
 
@@ -161,7 +181,7 @@ To eliminate data leakage, all imputation statistics, standard scalers, and cate
 
 ---
 
-## 6. Model Progression Ladder & Inductive Biases
+## 7. Model Progression Ladder & Inductive Biases
 
 We evaluated five distinct model configurations to assess how inductive biases, non-linearity, and class balancing impact clinical utility:
 
@@ -193,7 +213,7 @@ We evaluated five distinct model configurations to assess how inductive biases, 
 
 ---
 
-## 7. Comprehensive Model Evaluation & Results
+## 8. Comprehensive Model Evaluation & Results
 
 All models were evaluated on the **15,049 patient-disjoint validation cohort** (1,710 readmissions, 13,339 stable discharges; 11.36% prevalence). Test metrics remain strictly locked to preserve holdout integrity.
 
@@ -217,7 +237,7 @@ CatBoost achieved the highest PR-AUC (**0.2128**), representing an ~87% relative
 
 ---
 
-## 8. Feature Engineering Ablation: A Rigorous Negative Result
+## 9. Feature Engineering Ablation: A Rigorous Negative Result
 
 In academic machine learning, reporting negative results is essential for scientific integrity. We tested the hypothesis that domain-crafted interaction variables would enhance tree-based discrimination:
 
@@ -243,7 +263,7 @@ The engineered features introduced collinearity and diluted tree split entropy a
 
 ---
 
-## 9. Explainability & Clinical Feature Importance
+## 10. Explainability & Clinical Feature Importance
 
 To enable trusted clinical adoption, our models provide both global and local interpretability via **TreeSHAP (Shapley Additive Explanations)**:
 
@@ -262,9 +282,9 @@ To enable trusted clinical adoption, our models provide both global and local in
 
 ---
 
-## 10. Interactive Clinical Dashboard
+## 11. Interactive Clinical Dashboard Suite
 
-The project includes an interactive web dashboard (`index.html`) running on vanilla JavaScript and Chart.js, designed for clinicians, case managers, and technical evaluators:
+The project includes an interactive web dashboard hosted live at [https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/) and contained locally in `index.html`:
 
 1. **Live Patient Risk Estimator (Section 1)**:
    - Clinicians can adjust 8 top predictive parameters (prior inpatient visits, length of stay, lab procedures, medications, diagnoses, emergency visits, outpatient visits, and discharge disposition).
@@ -283,7 +303,7 @@ The project includes an interactive web dashboard (`index.html`) running on vani
 
 ---
 
-## 11. Repository Structure
+## 12. Repository Structure
 
 ```
 Care Continum/
@@ -346,43 +366,42 @@ Care Continum/
 
 ---
 
-## 12. Environment Setup & Reproduction Guide
+## 13. Environment Setup & Reproduction Guide
 
-### Prerequisites
-- Python 3.10+ (tested on Windows 11 and Ubuntu 22.04)
-- Git
+### Option A: Instant Access (Zero Installation)
+Simply visit the live, deployed web application:  
+👉 **[https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/)**
 
-### Step 1: Clone Repository & Create Virtual Environment
+### Option B: Local Developer Reproduction & Training
+
+#### 1. Clone Repository & Create Virtual Environment
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/care-continuum.git
-cd "care-continuum"
+git clone https://github.com/Arumuru-Ram-Vara-Prasad/Care-Continuum-.git
+cd Care-Continuum-
 
-# Create a clean virtual environment
+# Create virtual environment
 python -m venv venv
 
-# Activate the virtual environment
+# Activate virtual environment
 # Windows (PowerShell):
 .\venv\Scripts\Activate.ps1
 # Linux / macOS:
 source venv/bin/activate
 ```
 
-### Step 2: Install Required Dependencies
+#### 2. Install Required Dependencies
 ```bash
 pip install --upgrade pip
 pip install numpy pandas scipy scikit-learn catboost lightgbm joblib matplotlib
 ```
 
-### Step 3: Run the Preprocessing Pipeline
-To regenerate the patient-disjoint partitions, clinical mappings, and sparse feature matrices:
+#### 3. Run Preprocessing Pipeline
 ```bash
 python Preprocessing/prepare_model_data.py
 ```
 *Outputs: Generates `X_train.npz`, `X_validation.npz`, `X_test.npz`, target vectors in `dataset/`, and saves `preprocessor.joblib` in `Preprocessing/model_ready/`.*
 
-### Step 4: Train & Benchmark Models
-Train individual models or reproduce the full experimental progression:
+#### 4. Train & Benchmark Models
 ```bash
 # 1. Train Baseline Unweighted Logistic Regression
 python Training/train_logistic_regression_care_continuum.py
@@ -403,20 +422,24 @@ python Training/train_lightgbm.py
 python Training/train_catboost.py
 ```
 
-### Step 5: Launch the Interactive Dashboard
-The clinical interface requires a local web server (to permit local asset loading):
+#### 5. Launch Local Dashboard
 ```bash
-# Launch a lightweight HTTP server on port 8765
 python -m http.server 8765
 ```
-Open your browser and navigate to:
+Open `http://localhost:8765/index.html` in your browser.
+
+#### 6. Pushing Changes to GitHub & Updating Live GitHub Pages
+To update the remote repository and refresh the live website at `https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/`:
+```bash
+git add README.md index.html styles.css app.js
+git commit -m "Update documentation and web application"
+git push origin main
 ```
-http://localhost:8765/index.html
-```
+*GitHub Pages will automatically rebuild and deploy the update within 1–2 minutes.*
 
 ---
 
-## 13. Academic Rubric Alignment
+## 14. Academic Rubric Alignment
 
 This project is structured in rigorous compliance with academic evaluation standards (ES 335: Machine Learning, IIT Gandhinagar):
 
@@ -432,7 +455,7 @@ This project is structured in rigorous compliance with academic evaluation stand
 
 ---
 
-## 14. References & Citations
+## 15. References & Citations
 
 1. **UCI Diabetes 130-US Hospitals Dataset**:  
    Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c Measurement on Hospital Readmission Rates: Analysis of 70,000 Clinical Database Patient Records.* BioMed Research International, 2014, 781670.
