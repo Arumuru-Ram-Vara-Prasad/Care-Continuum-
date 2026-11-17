@@ -265,20 +265,22 @@ The engineered features introduced collinearity and diluted tree split entropy a
 
 ## 10. Explainability & Clinical Feature Importance
 
-To enable trusted clinical adoption, our models provide both global and local interpretability via **TreeSHAP (Shapley Additive Explanations)**:
+The CatBoost training script exports the model's built-in global feature-importance values using `get_feature_importance()`. This gives a dataset-level ranking of which inputs the fitted model used most. It is **not TreeSHAP**, does not provide patient-level explanations, and must not be interpreted as evidence of causation.
 
-### Top 8 Predictors of 30-Day Readmission
+### Top 8 Features by CatBoost Global Importance
 
-| Rank | Clinical Feature | Clinical Rationale & Attribution |
-| :---: | :--- | :--- |
-| **1** | `number_inpatient` | **Past inpatient admissions in preceding 12 months.** The single strongest predictor of chronic vulnerability and healthcare system dependency. |
-| **2** | `discharge_disposition_id` | **Discharge destination.** Transfers to skilled nursing facilities (SNF) or home health services exhibit markedly higher readmission likelihood than routine home discharges. |
-| **3** | `number_diagnoses` | **Systemic comorbidity burden.** Patients carrying 9+ ICD-9 diagnostic codes exhibit multi-organ fragility and complex therapeutic contraindications. |
-| **4** | `num_medications` | **Polypharmacy marker.** High prescription count correlates with adverse drug interactions, compliance challenges, and complex dosing. |
-| **5** | `num_lab_procedures` | **Inpatient diagnostic intensity.** Reflects acute physiological instability requiring frequent inpatient blood and diagnostic monitoring. |
-| **6** | `time_in_hospital` | **Encounter acuity.** Extended length of stay reflects clinical complications, nosocomial infection risks, or functional deconditioning. |
-| **7** | `number_emergency` | **Acute unscheduled care reliance.** High past ED visits indicate sub-optimal outpatient primary care access and ambulatory care-sensitive relapse. |
-| **8** | `diabetesMed` / `insulin` | **Active glycemic pharmacotherapy.** Patients requiring exogenous insulin or multiple oral hypoglycemics exhibit higher metabolic instability than diet-managed patients. |
+| Rank | Feature | Importance (%) |
+| :---: | :--- | ---: |
+| **1** | `num_lab_procedures` | 9.15 |
+| **2** | `num_medications` | 8.10 |
+| **3** | `discharge_disposition_id` | 7.96 |
+| **4** | `diag_1_group` | 7.51 |
+| **5** | `number_inpatient` | 6.09 |
+| **6** | `time_in_hospital` | 5.42 |
+| **7** | `age` | 4.88 |
+| **8** | `diag_2_group` | 4.80 |
+
+These values are relative model-importance scores. Clinical explanations beside them should be treated as possible context for the associations, not as causal effects.
 
 ---
 
@@ -286,9 +288,9 @@ To enable trusted clinical adoption, our models provide both global and local in
 
 The project includes an interactive web dashboard hosted live at [https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/) and contained locally in `index.html`:
 
-1. **Live Patient Risk Estimator (Section 1)**:
-   - Clinicians can adjust 8 top predictive parameters (prior inpatient visits, length of stay, lab procedures, medications, diagnoses, emergency visits, outpatient visits, and discharge disposition).
-   - Generates real-time readmission risk probabilities with dynamic clinical tiering: *Low Risk* (<15%), *Moderate Risk* (15–30%), or *High Risk* (>30%) along with actionable transitional care recommendations.
+1. **Illustrative Browser-Based Risk Estimator (Section 1)**:
+   - Users can adjust clinical inputs and see a probability-like score with explanatory notes.
+   - The current implementation uses a fixed coefficient-based formula in JavaScript; it does **not** load the saved CatBoost model. The result is an educational illustration, not a deployed model prediction or a clinical recommendation.
 2. **Visual Preprocessing Pipeline Explorer (Section 3)**:
    - Clean, interactive flowchart mapping the 7 data transformation stages from raw 101,766 hospital encounters to the 189-feature model-ready matrix.
 3. **5-Stage Model Progression with Expandable Specifications (Section 4)**:
@@ -418,7 +420,7 @@ python Training/train_random_forest_feature_engineering_experiment.py
 # 5. Train LightGBM Classifier
 python Training/train_lightgbm.py
 
-# 6. Train Production Champion CatBoost Model
+# 6. Train the primary CatBoost model
 python Training/train_catboost.py
 ```
 
@@ -450,12 +452,12 @@ This project is structured in rigorous compliance with academic evaluation stand
 | **Leakage-Free Validation Design** | Implemented `GroupShuffleSplit` on `patient_nbr` across 70,439 patients. Refit preprocessing strictly inside 5-fold `GroupKFold` folds. Locked test set (19,955 encounters) untouched during model tuning. | **20 pts** |
 | **Baseline & Model Progression** | Documented progression from naive unweighted LR (identifying recall collapse) to class-balanced LR, Random Forest, feature ablation, and gradient boosting (CatBoost vs. LightGBM). | **15 pts** |
 | **Methodological Rigor & Negative Results** | Reported honest negative result on feature engineering ablation (RF PR-AUC drop from 0.2049 to 0.2014). Prioritized PR-AUC over inflated ROC-AUC and Accuracy. | **15 pts** |
-| **Interpretability & Interactive Interface** | Deployed TreeSHAP global feature attributions. Built responsive web dashboard (`index.html`) with interactive patient risk predictor and cross-model confusion matrix simulator. | **15 pts** |
+| **Interpretability & Interactive Interface** | Reported CatBoost's built-in global feature-importance ranking. Built responsive web dashboard (`index.html`) with an illustrative coefficient-based risk estimator and a cross-model threshold/confusion-matrix explorer. | **15 pts** |
 | **Reproducibility & Engineering Cleanliness** | Comprehensive README, clean scripts, modular directory structure, fixed random seeds (`random_state=42`), and serialized artifacts. | **10 pts** |
 
 ---
 
-## 15. References & Citations
+## 17. References & Citations
 
 1. **UCI Diabetes 130-US Hospitals Dataset**:  
    Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c Measurement on Hospital Readmission Rates: Analysis of 70,000 Clinical Database Patient Records.* BioMed Research International, 2014, 781670.
@@ -463,9 +465,8 @@ This project is structured in rigorous compliance with academic evaluation stand
    Centers for Medicare & Medicaid Services. *Hospital Readmissions Reduction Program (HRRP).* Section 3025 of the Affordable Care Act (ACA), Social Security Act § 1886(q).
 3. **CatBoost Algorithm**:  
    Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., & Gulin, A. (2018). *CatBoost: unbiased boosting with categorical features.* Advances in Neural Information Processing Systems (NeurIPS 2018), 31.
-4. **SHAP (SHapley Additive exPlanations)**:  
-   Lundberg, S. M., Erion, G., Chen, H., DeGrave, A., Prutkin, J. M., Nair, B., Katz, R., Himmelfarb, J., Bansal, N., & Lee, S. I. (2020). *From local explanations to global understanding with explainable AI for trees.* Nature Machine Intelligence, 2(1), 56–67.
-5. **Class Imbalance in Clinical Machine Learning**:  
+
+4. **Class Imbalance in Clinical Machine Learning**:  
    Saito, T., & Rehmsmeier, M. (2015). *The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets.* PLOS ONE, 10(3), e0118432.
 
 ## 15. Individual Contributions & Understanding
