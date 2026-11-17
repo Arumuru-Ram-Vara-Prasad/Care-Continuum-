@@ -289,8 +289,8 @@ These values are relative model-importance scores. Clinical explanations beside 
 The project includes an interactive web dashboard hosted live at [https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/](https://arumuru-ram-vara-prasad.github.io/Care-Continuum-/) and contained locally in `index.html`:
 
 1. **Illustrative Browser-Based Risk Estimator (Section 1)**:
-   - Users can adjust clinical inputs and see a probability-like score with explanatory notes.
-   - The current implementation uses a fixed coefficient-based formula in JavaScript; it does **not** load the saved CatBoost model. The result is an educational illustration, not a deployed model prediction or a clinical recommendation.
+   - Users can adjust example encounter inputs and see a probability-like score with explanatory notes.
+   - The current implementation uses a fixed coefficient-based formula embedded in `index.html`; it does **not** load the saved CatBoost model. Scores and suggested follow-up messages are educational illustrations, not validated clinical predictions or medical advice.
 2. **Visual Preprocessing Pipeline Explorer (Section 3)**:
    - Clean, interactive flowchart mapping the 7 data transformation stages from raw 101,766 hospital encounters to the 189-feature model-ready matrix.
 3. **5-Stage Model Progression with Expandable Specifications (Section 4)**:
@@ -310,9 +310,9 @@ The project includes an interactive web dashboard hosted live at [https://arumur
 ```
 Care Continum/
 │
-├── index.html                                 # Interactive web application & clinical dashboard
-├── styles.css                                 # Professional healthcare dashboard styling
-├── app.js                                     # Real-time risk estimation logic & dashboard controls
+├── index.html                                 # Current published dashboard; CSS and JavaScript are embedded
+├── styles.css                                 # Standalone stylesheet retained in repository; not imported by current index.html
+├── app.js                                     # Standalone JavaScript retained in repository; not imported by current index.html
 ├── README.md                                  # Academic & technical documentation
 ├── care_continuum_data_cleaning_decisions.pdf # Historical cleaning documentation
 ├── confusion_matrix_image.py                  # Standalone confusion matrix plotting utility
@@ -401,7 +401,7 @@ pip install numpy pandas scipy scikit-learn catboost lightgbm joblib matplotlib
 ```bash
 python Preprocessing/prepare_model_data.py
 ```
-*Outputs: Generates `X_train.npz`, `X_validation.npz`, `X_test.npz`, target vectors in `dataset/`, and saves `preprocessor.joblib` in `Preprocessing/model_ready/`.*
+*Outputs: The current script writes the sparse feature matrices, target files, split assignments, fitted preprocessor, metadata, and audits to `dataset/model_ready/`. The repository also retains previously generated split files at the top level of `dataset/`; keep these locations distinct when checking which artefacts a training script loads.*
 
 #### 4. Train & Benchmark Models
 ```bash
