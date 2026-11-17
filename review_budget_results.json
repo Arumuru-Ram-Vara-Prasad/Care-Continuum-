@@ -1,0 +1,210 @@
+{
+  "25": {
+    "k": 376,
+    "pct": 2.5,
+    "models": {
+      "catboost": {
+        "name": "CatBoost (Champion)",
+        "caught": 134,
+        "false_alarms": 242,
+        "missed": 1576,
+        "precision": 0.356,
+        "recall": 0.078
+      },
+      "lightgbm": {
+        "name": "LightGBM",
+        "caught": 127,
+        "false_alarms": 249,
+        "missed": 1583,
+        "precision": 0.338,
+        "recall": 0.074
+      },
+      "rf": {
+        "name": "Random Forest",
+        "caught": 127,
+        "false_alarms": 249,
+        "missed": 1583,
+        "precision": 0.338,
+        "recall": 0.074
+      },
+      "cw_lr": {
+        "name": "Class-Weighted LR",
+        "caught": 128,
+        "false_alarms": 248,
+        "missed": 1582,
+        "precision": 0.34,
+        "recall": 0.075
+      },
+      "base_lr": {
+        "name": "Unweighted LR (Baseline)",
+        "caught": 124,
+        "false_alarms": 252,
+        "missed": 1586,
+        "precision": 0.33,
+        "recall": 0.073
+      }
+    },
+    "random": {
+      "caught": 43,
+      "missed": 1667,
+      "precision": 0.114,
+      "recall": 0.025
+    }
+  },
+  "50": {
+    "k": 752,
+    "pct": 5.0,
+    "models": {
+      "catboost": {
+        "name": "CatBoost (Champion)",
+        "caught": 240,
+        "false_alarms": 512,
+        "missed": 1470,
+        "precision": 0.319,
+        "recall": 0.14
+      },
+      "lightgbm": {
+        "name": "LightGBM",
+        "caught": 220,
+        "false_alarms": 532,
+        "missed": 1490,
+        "precision": 0.293,
+        "recall": 0.129
+      },
+      "rf": {
+        "name": "Random Forest",
+        "caught": 216,
+        "false_alarms": 536,
+        "missed": 1494,
+        "precision": 0.287,
+        "recall": 0.126
+      },
+      "cw_lr": {
+        "name": "Class-Weighted LR",
+        "caught": 222,
+        "false_alarms": 530,
+        "missed": 1488,
+        "precision": 0.295,
+        "recall": 0.13
+      },
+      "base_lr": {
+        "name": "Unweighted LR (Baseline)",
+        "caught": 221,
+        "false_alarms": 531,
+        "missed": 1489,
+        "precision": 0.294,
+        "recall": 0.129
+      }
+    },
+    "random": {
+      "caught": 85,
+      "missed": 1625,
+      "precision": 0.113,
+      "recall": 0.05
+    }
+  },
+  "100": {
+    "k": 1505,
+    "pct": 10.0,
+    "models": {
+      "catboost": {
+        "name": "CatBoost (Champion)",
+        "caught": 397,
+        "false_alarms": 1108,
+        "missed": 1313,
+        "precision": 0.264,
+        "recall": 0.232
+      },
+      "lightgbm": {
+        "name": "LightGBM",
+        "caught": 358,
+        "false_alarms": 1147,
+        "missed": 1352,
+        "precision": 0.238,
+        "recall": 0.209
+      },
+      "rf": {
+        "name": "Random Forest",
+        "caught": 388,
+        "false_alarms": 1117,
+        "missed": 1322,
+        "precision": 0.258,
+        "recall": 0.227
+      },
+      "cw_lr": {
+        "name": "Class-Weighted LR",
+        "caught": 358,
+        "false_alarms": 1147,
+        "missed": 1352,
+        "precision": 0.238,
+        "recall": 0.209
+      },
+      "base_lr": {
+        "name": "Unweighted LR (Baseline)",
+        "caught": 357,
+        "false_alarms": 1148,
+        "missed": 1353,
+        "precision": 0.237,
+        "recall": 0.209
+      }
+    },
+    "random": {
+      "caught": 171,
+      "missed": 1539,
+      "precision": 0.114,
+      "recall": 0.1
+    }
+  },
+  "200": {
+    "k": 3010,
+    "pct": 20.0,
+    "models": {
+      "catboost": {
+        "name": "CatBoost (Champion)",
+        "caught": 658,
+        "false_alarms": 2352,
+        "missed": 1052,
+        "precision": 0.219,
+        "recall": 0.385
+      },
+      "lightgbm": {
+        "name": "LightGBM",
+        "caught": 607,
+        "false_alarms": 2403,
+        "missed": 1103,
+        "precision": 0.202,
+        "recall": 0.355
+      },
+      "rf": {
+        "name": "Random Forest",
+        "caught": 621,
+        "false_alarms": 2389,
+        "missed": 1089,
+        "precision": 0.206,
+        "recall": 0.363
+      },
+      "cw_lr": {
+        "name": "Class-Weighted LR",
+        "caught": 621,
+        "false_alarms": 2389,
+        "missed": 1089,
+        "precision": 0.206,
+        "recall": 0.363
+      },
+      "base_lr": {
+        "name": "Unweighted LR (Baseline)",
+        "caught": 618,
+        "false_alarms": 2392,
+        "missed": 1092,
+        "precision": 0.205,
+        "recall": 0.361
+      }
+    },
+    "random": {
+      "caught": 342,
+      "missed": 1368,
+      "precision": 0.114,
+      "recall": 0.2
+    }
+  }
+}
