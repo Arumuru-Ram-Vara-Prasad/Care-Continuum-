@@ -26,8 +26,7 @@
 11. [Interactive Clinical Dashboard Suite](#11-interactive-clinical-dashboard-suite)
 12. [Repository Structure](#12-repository-structure)
 13. [Environment Setup & Reproduction Guide](#13-environment-setup--reproduction-guide)
-14. [Academic Rubric Alignment](#14-academic-rubric-alignment)
-15. [References & Citations](#15-references--citations)
+17. [References & Citations](#17-references--citations)
 
 ---
 
@@ -438,22 +437,6 @@ git commit -m "Update documentation and web application"
 git push origin main
 ```
 *GitHub Pages will automatically rebuild and deploy the update within 1–2 minutes.*
-
----
-
-## 14. Academic Rubric Alignment
-
-This project is structured in rigorous compliance with academic evaluation standards (ES 335: Machine Learning, IIT Gandhinagar):
-
-| Rubric Dimension | Project Implementation & Proof of Compliance | Points / Weight |
-| :--- | :--- | :---: |
-| **Problem Formulation & Clinical Framing** | Formulated binary 30-day readmission prediction against CMS HRRP economic standards. Explicitly defined and justified the clinical decision point at inpatient discharge planning. | **10 pts** |
-| **Data Understanding & Preprocessing** | Analyzed 101,766 encounters; conducted ICD-9 organ mapping (9 categories), specialty consolidation (17 departments), semantic "Not Measured" imputation, and FDR-controlled rare medication pruning. | **15 pts** |
-| **Leakage-Free Validation Design** | Implemented `GroupShuffleSplit` on `patient_nbr` across 70,439 patients. Refit preprocessing strictly inside 5-fold `GroupKFold` folds. Locked test set (19,955 encounters) untouched during model tuning. | **20 pts** |
-| **Baseline & Model Progression** | Documented progression from naive unweighted LR (identifying recall collapse) to class-balanced LR, Random Forest, feature ablation, and gradient boosting (CatBoost vs. LightGBM). | **15 pts** |
-| **Methodological Rigor & Negative Results** | Reported honest negative result on feature engineering ablation (RF PR-AUC drop from 0.2049 to 0.2014). Prioritized PR-AUC over inflated ROC-AUC and Accuracy. | **15 pts** |
-| **Interpretability & Interactive Interface** | Reported CatBoost's built-in global feature-importance ranking. Built responsive web dashboard (`index.html`) with an illustrative coefficient-based risk estimator and a cross-model threshold/confusion-matrix explorer. | **15 pts** |
-| **Reproducibility & Engineering Cleanliness** | Comprehensive README, clean scripts, modular directory structure, fixed random seeds (`random_state=42`), and serialized artifacts. | **10 pts** |
 
 ---
 
