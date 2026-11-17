@@ -3036,9 +3036,32 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       </div>
 
       <div class="card">
-        <p style="text-align:center; padding:2rem 1rem; color:var(--gray-500); font-style:italic; font-size:0.95rem;">
-          Each team member's individual contribution, key choices they made, evaluation of their work, a limitation they identified, and a small change they would make are documented during the oral defense.
+        <div class="card-title">Individual Contribution &amp; Technical Reflection</div>
+        <p style="margin-bottom:1rem; font-size:0.9rem; color:var(--gray-700);">
+          The project involved two complementary strands: an independent compact-model exploration and the shared Care Continuum pipeline and website documented in this repository. The compact 10-feature model described below is a separate experiment; it is not the 189-feature CatBoost model whose validation results appear in Sections 4–6.
         </p>
+
+        <div style="border-left:4px solid var(--accent); padding:1rem 1.15rem; background:#f0f7fc; border-radius:0 8px 8px 0; margin-bottom:1.25rem;">
+          <h3 style="color:var(--primary); font-size:1.08rem; margin-bottom:0.45rem;">1. Prattipati Nagayaswanth — Compact-model experimentation</h3>
+          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Individual work:</strong> Developed and compared a separate compact CatBoost pipeline using 42-, 22- and 10-feature representations. Explored baseline and alternative classifiers, examined the effect of reducing medication inputs, carried out eight hyperparameter configurations for the 10-feature model, and documented its feature importance and held-out test evaluation.</p>
+          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Key technical reasoning:</strong> Compared a larger feature set with more compact alternatives to reduce the number of inputs required by a prediction interface. Used patient-grouped splitting to prevent encounters from the same patient appearing across train and test partitions. The selected compact model was evaluated on its own held-out test set, with accuracy 63.46%, readmitted-class precision 62.82%, recall 54.49% and F1 0.5836.</p>
+          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Limitation identified:</strong> The compact model's results belong to a different modelling pipeline and cohort definition from the 189-feature pipeline reported in this website. Their metrics must not be compared as if they were produced on the same split or feature representation. The compact model is also not the inference engine of the JavaScript risk simulator shown on this website.</p>
+          <p style="font-size:0.88rem; margin:0;"><strong>Improvement proposed:</strong> Integrate the compact model through an actual model-serving backend, then evaluate both pipelines on a clearly specified, identical patient-disjoint evaluation design before making direct performance comparisons.</p>
+          <p style="font-size:0.78rem; margin-top:0.75rem; color:var(--gray-600);"><strong>Evidence:</strong> Separate CareContinuum-AI model artefacts, notebooks, model results and development record.</p>
+        </div>
+
+        <div style="border-left:4px solid var(--success); padding:1rem 1.15rem; background:#effaf4; border-radius:0 8px 8px 0; margin-bottom:1.25rem;">
+          <h3 style="color:var(--primary); font-size:1.08rem; margin-bottom:0.45rem;">2. Arumuru Ram Vara Prasad — Shared pipeline, evaluation and website integration</h3>
+          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Work documented in the shared repository:</strong> The repository contains the data-cleaning audit, exploratory analysis, diagnosis and specialty grouping scripts, medication-feature analysis, patient-grouped preprocessing and split generation, training scripts for Logistic Regression, class-weighted Logistic Regression, Random Forest, CatBoost and LightGBM, saved model artefacts, validation outputs, reports, and the HTML/CSS/JavaScript website.</p>
+          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Key technical reasoning reflected in the implementation:</strong> Defined the target as early readmission within 30 days, retained multiple encounters per patient while grouping by patient identifier for the data splits, fitted transformations within training folds, used PR-AUC alongside threshold-dependent metrics because the positive class is uncommon, and recorded the feature-engineering ablation as a negative result rather than presenting it as an improvement. The website presents the reasoning, validation results, error counts and threshold trade-offs.</p>
+          <p style="font-size:0.88rem; margin-bottom:0.65rem;"><strong>Limitation identified:</strong> The held-out test partition remains unscored, so the reported results are validation and grouped cross-validation results only. The current browser-based risk estimator uses manually specified log-odds coefficients rather than loading the saved CatBoost model; it should therefore be understood as an illustrative simulator, not deployment of the trained model.</p>
+          <p style="font-size:0.88rem; margin:0;"><strong>Improvement proposed:</strong> Replace or relabel the illustrative risk estimator, connect a real model-serving endpoint if live model inference is intended, and complete one final evaluation on the untouched test set after model and threshold choices are locked.</p>
+          <p style="font-size:0.78rem; margin-top:0.75rem; color:var(--gray-600);"><strong>Evidence:</strong> Shared repository files under <code>data_cleaning/</code>, <code>data_analysis/</code>, <code>Preprocessing/</code>, <code>Training/</code>, <code>models/</code>, <code>Reports/</code> and the web application. Git history records the repository commits under this GitHub account; commit attribution alone is not proof of the division of every task.</p>
+        </div>
+
+        <div class="highlight-box warning" style="margin-bottom:0;">
+          <strong>Assessment note:</strong> These statements distinguish the two model pipelines and identify evidence available in the submitted materials. Individual explanations should be checked by each contributor for accuracy before submission. The validation scores on this website must not be mixed with the compact-model test scores stated above.
+        </div>
       </div>
     </section>
 
