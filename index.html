@@ -244,7 +244,6 @@ body.sidebar-collapsed .main-content {
   flex-shrink: 0;
 }
 .section-header h2 { font-size: 1.5rem; color: var(--primary); font-weight: 700; }
-.section-header .pts { font-size: 0.78rem; color: var(--gray-500); margin-left: auto; white-space: nowrap; font-weight: 600; }
 
 /* Cards */
 .card {
@@ -1295,7 +1294,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num">1</span>
         <h2>Problem Formulation &amp; Scope</h2>
-        <span class="pts">10 pts</span>
+        
       </div>
 
       <div class="highlight-box">
@@ -1342,7 +1341,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num" style="background:var(--accent); font-size:0.85rem; font-weight:700;">RP</span>
         <h2>Readmission Risk Predictor</h2>
-        <span class="pts" style="background:#e8f4fd; color:var(--primary); padding:3px 10px; border-radius:12px; font-weight:700;">Illustrative Score Simulator</span>
+        <span class="simulator-label" style="background:#e8f4fd; color:var(--primary); padding:3px 10px; border-radius:12px; font-weight:700;">Illustrative Score Simulator</span>
       </div>
 
       <div class="highlight-box warning">
@@ -1557,7 +1556,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num">2</span>
         <h2>Data Understanding</h2>
-        <span class="pts">10 pts</span>
+        
       </div>
 
       <!-- 1. DATA SOURCE & CLINICAL SETTING -->
@@ -1688,7 +1687,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num">3</span>
         <h2>Preprocessing &amp; Statistical Reasoning</h2>
-        <span class="pts">10 pts</span>
+        
       </div>
 
                   <!-- 1. PREPROCESSING PIPELINE (DIAGRAM & STEP-BY-STEP FLOW) -->
@@ -1927,7 +1926,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
           <div>
             <div class="card-title" style="margin-bottom: 0.25rem;">Justification of Preprocessing &amp; Transformation Decisions</div>
             <p style="font-size: 0.88rem; color: var(--gray-700); margin-bottom: 0;">
-              Every transformation is justified under our evaluation rubric. Click the <strong>Why?</strong> button on any decision to see the plain logical reasoning behind it.
+              Each transformation is explained with the practical reason for the decision. Click the <strong>Why?</strong> button on any decision to see the reasoning behind it.
             </p>
           </div>
           <button type="button" class="why-toggle-all-btn" onclick="toggleAllDecisions()" style="padding: 0.4rem 0.85rem; font-size: 0.78rem; font-weight: 600; color: var(--primary); background: #e8f4fd; border: 1px solid var(--accent); border-radius: 6px; cursor: pointer; transition: all 0.2s;">
@@ -2227,7 +2226,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num">4</span>
         <h2>Baseline &amp; Method Selection</h2>
-        <span class="pts">15 pts</span>
+        
       </div>
 
       <p style="font-size:0.92rem; color:var(--gray-700); margin-bottom:1.5rem; line-height:1.6;">
@@ -2434,7 +2433,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
                 <div class="method-spec-box">
                   <div class="method-spec-label">Experiment Setup &amp; Discarded Features</div>
                   <p>Evaluated on identical 300-tree Random Forest architecture under 5-fold <code>GroupShuffleSplit</code>.<br>
-                  Discarded features: <code>medication_changes_count</code> and <code>has_specialty</code>. Documenting negative results satisfies rubric ablation requirements.</p>
+                  Discarded features: <code>medication_changes_count</code> and <code>has_specialty</code>. The experiment records a negative result, which helps us understand whether the additional features improved model performance.</p>
                 </div>
                 <!-- Part 3: Relevant Graph -->
                 <div class="method-spec-box">
@@ -2684,7 +2683,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num">5</span>
         <h2>Evaluation Design &amp; Metrics</h2>
-        <span class="pts">20 pts</span>
+        
       </div>
 
       <div class="card">
@@ -2744,7 +2743,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num">6</span>
         <h2>Results, Errors &amp; Limitations</h2>
-        <span class="pts">10 pts</span>
+        
       </div>
 
       <div class="card">
@@ -2836,7 +2835,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num">7</span>
         <h2>Reproducibility &amp; Technical Integrity</h2>
-        <span class="pts">5 pts</span>
+        
       </div>
 
       <div class="card">
@@ -2898,7 +2897,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num">7</span>
         <h2>Interactive Exploration</h2>
-        <span class="pts">15 pts (Website + Interaction)</span>
+        
       </div>
 
       <p style="margin-bottom:1.5rem; font-size:0.92rem; color:var(--gray-700);">
@@ -3032,7 +3031,7 @@ select.styled-select:focus { outline: none; border-color: var(--accent); }
       <div class="section-header">
         <span class="section-num">8</span>
         <h2>Individual Understanding &amp; Contributions</h2>
-        <span class="pts">5 pts</span>
+        
       </div>
 
       <p style="font-size:0.92rem; color:var(--gray-700); margin-bottom:1.25rem;">
