@@ -457,18 +457,6 @@ This project is structured in rigorous compliance with academic evaluation stand
 
 ---
 
-## 17. References & Citations
-
-1. **UCI Diabetes 130-US Hospitals Dataset**:  
-   Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c Measurement on Hospital Readmission Rates: Analysis of 70,000 Clinical Database Patient Records.* BioMed Research International, 2014, 781670.
-2. **CMS HRRP Program**:  
-   Centers for Medicare & Medicaid Services. *Hospital Readmissions Reduction Program (HRRP).* Section 3025 of the Affordable Care Act (ACA), Social Security Act § 1886(q).
-3. **CatBoost Algorithm**:  
-   Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., & Gulin, A. (2018). *CatBoost: unbiased boosting with categorical features.* Advances in Neural Information Processing Systems (NeurIPS 2018), 31.
-
-4. **Class Imbalance in Clinical Machine Learning**:  
-   Saito, T., & Rehmsmeier, M. (2015). *The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets.* PLOS ONE, 10(3), e0118432.
-
 ## 15. Individual Contributions & Understanding
 
 The project was completed collaboratively, with the following primary areas of responsibility.
@@ -503,3 +491,15 @@ AI tools were used as assistance during code development, debugging, technical e
 
 *Care Continuum — Advancing transitional care intelligence through leakage-free machine learning.*  
 *Course Project for ES 335: Machine Learning, Indian Institute of Technology Gandhinagar.*
+
+## 17. References & Citations
+
+1. **UCI Diabetes 130-US Hospitals Dataset**:  
+   Strack, B., DeShazo, J. P., Gennings, C., Olmo, J. L., Ventura, S., Cios, K. J., & Clore, J. N. (2014). *Impact of HbA1c Measurement on Hospital Readmission Rates: Analysis of 70,000 Clinical Database Patient Records.* BioMed Research International, 2014, 781670.
+2. **CMS HRRP Program**:  
+   Centers for Medicare & Medicaid Services. *Hospital Readmissions Reduction Program (HRRP).* Section 3025 of the Affordable Care Act (ACA), Social Security Act § 1886(q).
+3. **CatBoost Algorithm**:  
+   Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., & Gulin, A. (2018). *CatBoost: unbiased boosting with categorical features.* Advances in Neural Information Processing Systems (NeurIPS 2018), 31.
+
+4. **Class Imbalance in Clinical Machine Learning**:  
+   Saito, T., & Rehmsmeier, M. (2015). *The precision-recall plot is more informative than the ROC plot when evaluating binary classifiers on imbalanced datasets.* PLOS ONE, 10(3), e0118432.
